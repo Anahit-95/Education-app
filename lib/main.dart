@@ -1,3 +1,4 @@
+import 'package:educational_app/core/common/app/provider/course_of_the_day_notifier.dart';
 import 'package:educational_app/core/common/app/provider/user_provider.dart';
 import 'package:educational_app/core/res/colours.dart';
 import 'package:educational_app/core/res/fonts.dart';
@@ -28,7 +29,8 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => UserProvider()),
-        ChangeNotifierProvider(create: (_) => DashboardController())
+        ChangeNotifierProvider(create: (_) => DashboardController()),
+        ChangeNotifierProvider(create: (_) => CourseOfTheDayNotifier()),
       ],
       child: MaterialApp(
         title: 'Educational App',
