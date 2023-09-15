@@ -1,13 +1,12 @@
 import 'package:educational_app/core/common/app/provider/course_of_the_day_notifier.dart';
 import 'package:educational_app/core/common/views/loading_view.dart';
 import 'package:educational_app/core/common/widgets/not_found_text.dart';
-import 'package:educational_app/core/extensions/context_extension.dart';
 import 'package:educational_app/core/utils/core_utils.dart';
 import 'package:educational_app/src/course/presentation/cubit/course_cubit.dart';
 import 'package:educational_app/src/home/presentation/refactors/home_header.dart';
+import 'package:educational_app/src/home/presentation/refactors/home_subjects.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
 
 class HomeBody extends StatefulWidget {
   const HomeBody({super.key});
@@ -57,6 +56,10 @@ class _HomeBodyState extends State<HomeBody> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             children: [
               const HomeHeader(),
+              const SizedBox(height: 20),
+              HomeSubjects(
+                courses: courses,
+              )
             ],
           );
         }

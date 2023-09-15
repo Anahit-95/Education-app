@@ -55,6 +55,10 @@ Route<dynamic> generateRoute(RouteSettings settings) {
         (_) => const fui.ForgotPasswordScreen(),
         settings: settings,
       );
+    case CourseDetailsScreen.routeName:
+      return _pageBuilder(
+          (_) => CourseDetailsScreen(settings.arguments! as Course),
+          settings: settings);
     default:
       return _pageBuilder(
         (_) => const PageUnderConstruction(),

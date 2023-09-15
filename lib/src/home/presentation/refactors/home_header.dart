@@ -1,5 +1,6 @@
 import 'package:educational_app/core/common/app/provider/user_provider.dart';
 import 'package:educational_app/core/extensions/context_extension.dart';
+import 'package:educational_app/src/home/presentation/widgets/tinder_cards.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -19,17 +20,17 @@ class HomeHeader extends StatelessWidget {
               fontSize: 36,
             ),
           ),
-          // Positioned(
-          //   top: context.height >= 926
-          //       ? -25
-          //       : context.height >= 844
-          //           ? -6
-          //           : context.height <= 800
-          //               ? 10
-          //               : 10,
-          //   right: -14,
-          //   child: const,
-          // )
+          Positioned(
+            top: context.height >= 926
+                ? -25
+                : context.height >= 844
+                    ? -6
+                    : context.height <= 800
+                        ? 10
+                        : 10,
+            right: -14,
+            child: const TinderCards(),
+          ),
         ],
       ),
     );
