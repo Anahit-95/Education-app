@@ -28,22 +28,6 @@ class _ExpandableTextState extends State<ExpandableText> {
   void initState() {
     textSpan = TextSpan(
       text: widget.text,
-      style: widget.style?.copyWith(color: Colours.neutralTextColour),
-      children: [
-        TextSpan(
-          text: expanded ? ' show less' : ' show more',
-          style: const TextStyle(
-            color: Colours.primaryColour,
-            fontWeight: FontWeight.w600,
-          ),
-          recognizer: TapGestureRecognizer()
-            ..onTap = () {
-              setState(() {
-                expanded = !expanded;
-              });
-            },
-        ),
-      ],
     );
 
     textPainter = TextPainter(
@@ -62,6 +46,48 @@ class _ExpandableTextState extends State<ExpandableText> {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    const deafultStyle = TextStyle(
+      height: 1.8,
+      fontSize: 16,
+      color: Colours.neutralTextColour,
+    );
+    return Container(
+      child: textPainter.didExceedMaxLines
+          ? RichText(
+              text: TextSpan(
+                text: expanded
+                    ? widget.text
+                    : '${widget.text.substring(
+                        0,
+                        textPainter
+                            .getPositionForOffset(
+                              Offset(
+                                widget.context.width,
+                                widget.context.height,
+                              ),
+                            )
+                            .offset,
+                      )}...',
+                style: widget.style ?? deafultStyle,
+                children: [
+                  TextSpan(
+                      text: expanded ? ' Show Less' : 'Show more',
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          setState(() {
+                            expanded = !expanded;
+                          });
+                        },
+                      style: const TextStyle(
+                          color: Colours.primaryColour,
+                          fontWeight: FontWeight.w600)),
+                ],
+              ),
+            )
+          : Text(
+              widget.text,
+              style: widget.style ?? deafultStyle,
+            ),
+    );
   }
 }
