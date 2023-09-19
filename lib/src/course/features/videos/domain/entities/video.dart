@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:equatable/equatable.dart';
 
 class Video extends Equatable {
@@ -19,7 +18,6 @@ class Video extends Equatable {
           videoUrl: '_empty.videoUrl',
           uploadDate: DateTime.now(),
           courseId: '_empty.courseId',
-          thumbnailIsFile: false,
         );
 
   final String id;
@@ -32,5 +30,5 @@ class Video extends Equatable {
   final bool thumbnailIsFile;
 
   @override
-  List<Object?> get props => [id];
+  List<Object?> get props => [id, courseId];
 }

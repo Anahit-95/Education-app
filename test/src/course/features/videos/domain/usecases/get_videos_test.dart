@@ -16,10 +16,12 @@ void main() {
     usecase = GetVideos(repo);
   });
 
-  test('should call [VideoRepo.addValue]', () async {
+  final tVideo = Video.empty();
+
+  test('should call [VideoRepo.getVideos]', () async {
     when(
       () => repo.getVideos(any()),
-    ).thenAnswer((_) async => const Right([]));
+    ).thenAnswer((_) async => Right([tVideo]));
 
     final result = await usecase('test_id');
 
