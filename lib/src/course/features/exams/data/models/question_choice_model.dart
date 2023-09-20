@@ -23,10 +23,10 @@ class QuestionChoiceModel extends QuestionChoice {
         );
 
   QuestionChoiceModel.fromUploadMap(DataMap map)
-      : super(
+      : this(
           questionId: 'Test String',
           identifier: map['identifier'] as String,
-          choiceAnswer: map['choiceAnswer'] as String,
+          choiceAnswer: map['Answer'] as String,
         );
 
   QuestionChoice copyWith({

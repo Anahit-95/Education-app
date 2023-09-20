@@ -20,6 +20,7 @@ class ExamQuestionModel extends ExamQuestion {
           courseId: 'Test String',
           questionText: 'Test String',
           choices: const [],
+          correctAnswer: 'Test String',
         );
 
   ExamQuestionModel.fromMap(Map<String, dynamic> map)
@@ -34,15 +35,15 @@ class ExamQuestionModel extends ExamQuestion {
               .toList(),
         );
 
-  ExamQuestionModel.fromUploadMap(Map<String, dynamic> map)
-      : super(
-          id: '',
-          examId: '',
-          courseId: '',
-          questionText: map['questionText'] as String,
-          correctAnswer: map['correctAnswer'] as String,
+  ExamQuestionModel.fromUploadMap(DataMap map)
+      : this(
+          id: map['id'] as String? ?? '',
+          examId: map['examId'] as String? ?? '',
+          courseId: map['courseId'] as String? ?? '',
+          questionText: map['question'] as String,
+          correctAnswer: map['correct_answer'] as String,
           choices: List<DataMap>.from(map['answers'] as List<dynamic>)
-              .map(QuestionChoiceModel.fromMap)
+              .map(QuestionChoiceModel.fromUploadMap)
               .toList(),
         );
 
