@@ -80,4 +80,89 @@ void main() {
       expect(questionModel.examId, examModel.id);
     });
   });
+
+  group('getExamQuestions', () {
+    test('should return the questions of the given exam', () async {
+      // Arrenge
+      final exam = const ExamModel.empty().copyWith(
+        questions: [const ExamQuestionModel.empty()],
+      );
+
+      await firestore.collection('courses').doc(exam.courseId).set(
+            CourseModel.empty().copyWith(id: exam.courseId).toMap(),
+          );
+      await remoteDataSource.uploadExam(exam);
+
+      final examsCollection = await firestore
+          .collection('courses')
+          .doc(exam.courseId)
+          .collection('exams')
+          .get();
+      final examModel = ExamModel.fromMap(examsCollection.docs.first.data());
+
+      // Act
+      final result = await remoteDataSource.getExamQuestions(examModel);
+
+      // Assert
+      expect(result, isA<List<ExamQuestionModel>>());
+      expect(result, hasLength(1));
+      expect(result.first.courseId, exam.courseId);
+    });
+  });
+
+  group('getExams', () {
+    test('should return the exams of the given course', () async {
+      // Arrenge
+      final exam = const ExamModel.empty().copyWith(
+        questions: [const ExamQuestionModel.empty()],
+      );
+
+      await firestore.collection('courses').doc(exam.courseId).set(
+            CourseModel.empty().copyWith(id: exam.courseId).toMap(),
+          );
+      await remoteDataSource.uploadExam(exam);
+
+      // act
+      final result = await remoteDataSource.getExams(exam.courseId);
+      // Assert
+      expect(result, isA<List<ExamModel>>());
+      expect(result, hasLength(1));
+      expect(result.first.courseId, exam.courseId);
+    });
+  });
+
+  group('updateExam', () {
+    test('should update the given exam', () async {
+      // Arrenge
+      final exam = const ExamModel.empty().copyWith(
+        questions: [const ExamQuestionModel.empty()],
+      );
+
+      await firestore.collection('courses').doc(exam.courseId).set(
+            CourseModel.empty().copyWith(id: exam.courseId).toMap(),
+          );
+      await remoteDataSource.uploadExam(exam);
+
+      final examsCollection = await firestore
+          .collection('courses')
+          .doc(exam.courseId)
+          .collection('exams')
+          .get();
+      final examModel = ExamModel.fromMap(examsCollection.docs.first.data());
+      // act
+      await remoteDataSource.updateExam(examModel.copyWith(timeLimit: 100));
+
+      // assert
+      final updatedExam = await firestore
+          .collection('courses')
+          .doc(exam.courseId)
+          .collection('exams')
+          .doc(examModel.id)
+          .get();
+      expect(updatedExam.data(), isNotEmpty);
+      final updatedExamModel = ExamModel.fromMap(updatedExam.data()!);
+      expect(updatedExamModel.courseId, exam.courseId);
+      expect(updatedExamModel.timeLimit, 100);
+    });
+  });
 }

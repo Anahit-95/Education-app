@@ -47,7 +47,7 @@ class ExamQuestionModel extends ExamQuestion {
               .toList(),
         );
 
-  ExamQuestion copyWith({
+  ExamQuestionModel copyWith({
     String? id,
     String? examId,
     String? courseId,
@@ -55,7 +55,7 @@ class ExamQuestionModel extends ExamQuestion {
     List<QuestionChoice>? choices,
     String? correctAnswer,
   }) {
-    return ExamQuestion(
+    return ExamQuestionModel(
       id: id ?? this.id,
       examId: examId ?? this.examId,
       courseId: courseId ?? this.courseId,

@@ -3,6 +3,7 @@ import 'package:educational_app/core/errors/exceptions.dart';
 import 'package:educational_app/core/utils/datasource_utils.dart';
 import 'package:educational_app/src/course/features/exams/data/models/exam_model.dart';
 import 'package:educational_app/src/course/features/exams/data/models/exam_question_model.dart';
+import 'package:educational_app/src/course/features/exams/data/models/question_choice_model.dart';
 import 'package:educational_app/src/course/features/exams/data/models/user_exam_model.dart';
 import 'package:educational_app/src/course/features/exams/domain/entities/exam.dart';
 import 'package:educational_app/src/course/features/exams/domain/entities/user_exam.dart';
@@ -36,14 +37,58 @@ class ExamRemoteDataSrcImpl implements ExamRemoteDataSrc {
 
   @override
   Future<List<ExamQuestionModel>> getExamQuestions(Exam exam) async {
-    // TODO: implement getExamQuestions
-    throw UnimplementedError();
+    try {
+      await DataSourceUtils.authorizeUser(_auth);
+      final result = await _firestore
+          .collection('courses')
+          .doc(exam.courseId)
+          .collection('exams')
+          .doc(exam.id)
+          .collection('questions')
+          .get();
+
+      return result.docs
+          .map((doc) => ExamQuestionModel.fromMap(doc.data()))
+          .toList();
+    } on FirebaseException catch (e) {
+      throw ServerException(
+        message: e.message ?? 'Unknown error occured',
+        statusCode: e.code,
+      );
+    } on ServerException {
+      rethrow;
+    } catch (e) {
+      throw ServerException(
+        message: e.toString(),
+        statusCode: '500',
+      );
+    }
   }
 
   @override
   Future<List<ExamModel>> getExams(String courseId) async {
-    // TODO: implement getExams
-    throw UnimplementedError();
+    try {
+      await DataSourceUtils.authorizeUser(_auth);
+      final result = await _firestore
+          .collection('courses')
+          .doc(courseId)
+          .collection('exams')
+          .get();
+
+      return result.docs.map((doc) => ExamModel.fromMap(doc.data())).toList();
+    } on FirebaseException catch (e) {
+      throw ServerException(
+        message: e.message ?? 'Unknown error occured',
+        statusCode: e.code,
+      );
+    } on ServerException {
+      rethrow;
+    } catch (e) {
+      throw ServerException(
+        message: e.toString(),
+        statusCode: '500',
+      );
+    }
   }
 
   @override
@@ -66,8 +111,44 @@ class ExamRemoteDataSrcImpl implements ExamRemoteDataSrc {
 
   @override
   Future<void> updateExam(Exam exam) async {
-    // TODO: implement updateExam
-    throw UnimplementedError();
+    try {
+      await DataSourceUtils.authorizeUser(_auth);
+      await _firestore
+          .collection('courses')
+          .doc(exam.courseId)
+          .collection('exams')
+          .doc(exam.id)
+          .update((exam as ExamModel).toMap());
+
+      // update questions
+      final questions = exam.questions;
+      if (questions != null && questions.isNotEmpty) {
+        final batch = _firestore.batch();
+        for (final question in questions) {
+          final questionDocRef = _firestore
+              .collection('courses')
+              .doc(exam.courseId)
+              .collection('exams')
+              .doc(exam.id)
+              .collection('questions')
+              .doc(question.id);
+          batch.update(questionDocRef, (question as ExamQuestionModel).toMap());
+        }
+        await batch.commit();
+      }
+    } on FirebaseException catch (e) {
+      throw ServerException(
+        message: e.message ?? 'Unknown error occured',
+        statusCode: e.code,
+      );
+    } on ServerException {
+      rethrow;
+    } catch (e) {
+      throw ServerException(
+        message: e.toString(),
+        statusCode: '500',
+      );
+    }
   }
 
   @override
@@ -83,6 +164,32 @@ class ExamRemoteDataSrcImpl implements ExamRemoteDataSrc {
       await examDocRef.set(examToUpload.toMap());
 
       // upload questions
+      final questions = exam.questions;
+      if (questions != null && questions.isNotEmpty) {
+        final batch = _firestore.batch();
+        for (final question in questions) {
+          final questionDocRef = examDocRef.collection('questions').doc();
+          var questionToUpload = (question as ExamQuestionModel).copyWith(
+            id: questionDocRef.id,
+            examId: examDocRef.id,
+            courseId: exam.courseId,
+          );
+
+          final newChoices = <QuestionChoiceModel>[];
+          for (final choice in questionToUpload.choices) {
+            final newChoice = (choice as QuestionChoiceModel).copyWith(
+              questionId: questionDocRef.id,
+            );
+            newChoices.add(newChoice);
+          }
+          questionToUpload = questionToUpload.copyWith(choices: newChoices);
+          batch.set(questionDocRef, questionToUpload.toMap());
+        }
+        await batch.commit();
+      }
+      await _firestore.collection('courses').doc(exam.courseId).update({
+        'numberOfExams': FieldValue.increment(1),
+      });
     } on FirebaseException catch (e) {
       throw ServerException(
         message: e.message ?? 'Unknown error occured',

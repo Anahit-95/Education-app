@@ -29,7 +29,7 @@ class QuestionChoiceModel extends QuestionChoice {
           choiceAnswer: map['Answer'] as String,
         );
 
-  QuestionChoice copyWith({
+  QuestionChoiceModel copyWith({
     String? questionId,
     String? identifier,
     String? choiceAnswer,
