@@ -17,12 +17,8 @@ class DashboardController extends ChangeNotifier {
         TabItem(
           child: MultiBlocProvider(
             providers: [
-              BlocProvider(
-                create: (_) => sl<CourseCubit>(),
-              ),
-              BlocProvider(
-                create: (context) => sl<VideoCubit>(),
-              ),
+              BlocProvider(create: (_) => sl<CourseCubit>()),
+              BlocProvider(create: (_) => sl<VideoCubit>()),
             ],
             child: const HomeView(),
           ),

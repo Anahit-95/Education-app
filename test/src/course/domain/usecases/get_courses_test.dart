@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:educational_app/src/course/domain/entities/course.dart';
-import 'package:educational_app/src/course/domain/repos/cource_repo.dart';
+import 'package:educational_app/src/course/domain/repos/course_repo.dart';
 import 'package:educational_app/src/course/domain/usecases/get_courses.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -16,7 +16,7 @@ void main() {
     usecase = GetCourses(repo);
   });
 
-  test('should get cources from the repo', () async {
+  test('should get courses from the repo', () async {
     when(
       () => repo.getCourses(),
     ).thenAnswer((_) async => const Right([]));

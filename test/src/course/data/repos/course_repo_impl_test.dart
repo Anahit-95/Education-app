@@ -27,7 +27,7 @@ void main() {
     statusCode: '500',
   );
 
-  group('getCources', () {
+  group('getCourses', () {
     test(
       'should return [List<Course>] when call to remote source is successfull',
       () async {

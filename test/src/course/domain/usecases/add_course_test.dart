@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:educational_app/src/course/domain/entities/course.dart';
-import 'package:educational_app/src/course/domain/repos/cource_repo.dart';
+import 'package:educational_app/src/course/domain/repos/course_repo.dart';
 import 'package:educational_app/src/course/domain/usecases/add_course.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

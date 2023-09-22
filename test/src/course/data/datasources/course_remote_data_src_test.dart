@@ -70,7 +70,7 @@ void main() {
     );
   });
 
-  group('getCources', () {
+  group('getCourses', () {
     test('should return a List<Course> when the call is successful', () async {
       // Arrange
       final firstDate = DateTime.now();

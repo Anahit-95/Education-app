@@ -1,7 +1,10 @@
+import 'package:educational_app/src/auth/data/models/user_model.dart';
 import 'package:educational_app/src/course/data/models/course_model.dart';
 import 'package:educational_app/src/course/features/exams/data/datasources/exam_remote_data_src.dart';
 import 'package:educational_app/src/course/features/exams/data/models/exam_model.dart';
 import 'package:educational_app/src/course/features/exams/data/models/exam_question_model.dart';
+import 'package:educational_app/src/course/features/exams/data/models/user_choice_model.dart';
+import 'package:educational_app/src/course/features/exams/data/models/user_exam_model.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
@@ -163,6 +166,98 @@ void main() {
       final updatedExamModel = ExamModel.fromMap(updatedExam.data()!);
       expect(updatedExamModel.courseId, exam.courseId);
       expect(updatedExamModel.timeLimit, 100);
+    });
+  });
+
+  group('submitExam', () {
+    test('should submit the given exam', () async {
+      // Arrange
+      final userExam = UserExamModel.empty().copyWith(
+        totalQuestions: 2,
+        answers: [const UserChoiceModel.empty()],
+      );
+      await firestore.collection('users').doc(auth.currentUser!.uid).set(
+            const LocalUserModel.empty()
+                .copyWith(
+                  uid: auth.currentUser!.uid,
+                  points: 1,
+                )
+                .toMap(),
+          );
+
+      // Act
+      await remoteDataSource.submitExam(userExam);
+
+      // Assert
+      final submittedExam = await firestore
+          .collection('users')
+          .doc(auth.currentUser!.uid)
+          .collection('courses')
+          .doc(userExam.courseId)
+          .collection('exams')
+          .doc(userExam.examId)
+          .get();
+
+      expect(submittedExam.data(), isNotEmpty);
+      final submittedExamModel = UserExamModel.fromMap(submittedExam.data()!);
+      expect(submittedExamModel.courseId, userExam.courseId);
+
+      final userDoc =
+          await firestore.collection('users').doc(auth.currentUser!.uid).get();
+      expect(userDoc.data(), isNotEmpty);
+      final userModel = LocalUserModel.fromMap(userDoc.data()!);
+      expect(userModel.points, 51);
+
+      expect(userModel.enrolledCourseIds, contains(userExam.courseId));
+    });
+  });
+
+  group('getUserCourseExams', () {
+    test('should return the exams of the given course', () async {
+      // Arrange
+      final exam = UserExamModel.empty();
+      await firestore.collection('users').doc(auth.currentUser!.uid).set(
+            const LocalUserModel.empty()
+                .copyWith(uid: auth.currentUser!.uid, points: 1)
+                .toMap(),
+          );
+      await remoteDataSource.submitExam(exam);
+      // Act
+      final result = await remoteDataSource.getUserCourseExams(exam.courseId);
+
+      // Assert
+      expect(result, isA<List<UserExamModel>>());
+      expect(result, hasLength(1));
+      expect(result.first.courseId, exam.courseId);
+    });
+  });
+
+  group('getUserExams', () {
+    test('should return the exams of the current user', () async {
+      // arrange
+      final exam = UserExamModel.empty();
+      await firestore.collection('users').doc(auth.currentUser!.uid).set(
+            const LocalUserModel.empty()
+                .copyWith(uid: auth.currentUser!.uid, points: 1)
+                .toMap(),
+          );
+      await firestore
+          .collection('users')
+          .doc(auth.currentUser!.uid)
+          .collection('courses')
+          .doc(exam.courseId)
+          .set(
+            CourseModel.empty().copyWith(id: exam.courseId).toMap(),
+          );
+      await remoteDataSource.submitExam(exam);
+
+      // act
+      final result = await remoteDataSource.getUserExams();
+
+      // assert
+      expect(result, isA<List<UserExamModel>>());
+      expect(result, hasLength(1));
+      expect(result.first.courseId, exam.courseId);
     });
   });
 }

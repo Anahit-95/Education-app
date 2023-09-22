@@ -8,6 +8,7 @@ Future<void> init() async {
   await _initCourse();
   await _initVideo();
   await _initMaterial();
+  await _initExam();
 }
 
 Future<void> _initOnBoarding() async {
@@ -113,6 +114,35 @@ Future<void> _initMaterial() async {
         auth: sl(),
         firestore: sl(),
         storage: sl(),
+      ),
+    );
+}
+
+Future<void> _initExam() async {
+  sl
+    ..registerFactory(
+      () => ExamCubit(
+        getExamQuestions: sl(),
+        getExams: sl(),
+        submitExam: sl(),
+        updateExam: sl(),
+        uploadExam: sl(),
+        getUserCourseExams: sl(),
+        getUserExams: sl(),
+      ),
+    )
+    ..registerLazySingleton(() => GetExamQuestions(sl()))
+    ..registerLazySingleton(() => GetExams(sl()))
+    ..registerLazySingleton(() => SubmitExam(sl()))
+    ..registerLazySingleton(() => UpdateExam(sl()))
+    ..registerLazySingleton(() => UploadExam(sl()))
+    ..registerLazySingleton(() => GetUserCourseExams(sl()))
+    ..registerLazySingleton(() => GetUserExams(sl()))
+    ..registerLazySingleton<ExamRepo>(() => ExamRepoImpl(sl()))
+    ..registerLazySingleton<ExamRemoteDataSrc>(
+      () => ExamRemoteDataSrcImpl(
+        auth: sl(),
+        firestore: sl(),
       ),
     );
 }
