@@ -51,11 +51,15 @@ class _HomeVideosState extends State<HomeVideos> {
               SectionHeader(
                 sectionTitle: '{context.courseOfTheDay!.title} Videos',
                 seeAll: state.videos.length > 4,
-                onSeeAll: () => context.push(BlocProvider(
-                  create: (_) => sl<VideoCubit>(),
-                  // child: CourseVideosView(),
-                )),
+                onSeeAll: () => context.push(
+                  BlocProvider(
+                    create: (_) => sl<VideoCubit>(),
+                    // child: CourseVideosView(),
+                  ),
+                ),
               ),
+              const SizedBox(height: 20),
+              for (final video in state.videos.take(5)) const Placeholder(),
             ],
           );
         }
