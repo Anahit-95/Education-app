@@ -1,13 +1,19 @@
 import 'package:educational_app/core/utils/typedef.dart';
 
-abstract class UsecaseWithParams<Type, Params> {
-  const UsecaseWithParams();
+abstract class FutureUsecaseWithParams<Type, Params> {
+  const FutureUsecaseWithParams();
 
   ResultFuture<Type> call(Params params);
 }
 
-abstract class UsecaseWithoutParams<Type> {
-  const UsecaseWithoutParams();
+abstract class FutureUsecaseWithoutParams<Type> {
+  const FutureUsecaseWithoutParams();
 
   ResultFuture<Type> call();
+}
+
+abstract class StreamUsecaseWithoutParams<Type> {
+  const StreamUsecaseWithoutParams();
+
+  ResultStream<Type> call();
 }
