@@ -80,7 +80,7 @@ class CourseRemoteDataSrcImpl implements CourseRemoteDataSrc {
     } catch (e) {
       throw ServerException(
         message: e.toString(),
-        statusCode: '500',
+        statusCode: '505',
       );
     }
   }
@@ -111,7 +111,7 @@ class CourseRemoteDataSrcImpl implements CourseRemoteDataSrc {
     } catch (e) {
       throw ServerException(
         message: e.toString(),
-        statusCode: '500',
+        statusCode: '505',
       );
     }
   }

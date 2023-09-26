@@ -66,7 +66,7 @@ class VideoRemoteDataSrcImpl implements VideoRemoteDataSrc {
     } catch (e) {
       throw ServerException(
         message: e.toString(),
-        statusCode: '500',
+        statusCode: '505',
       );
     }
   }
@@ -93,7 +93,7 @@ class VideoRemoteDataSrcImpl implements VideoRemoteDataSrc {
     } catch (e) {
       throw ServerException(
         message: e.toString(),
-        statusCode: '500',
+        statusCode: '505',
       );
     }
   }
