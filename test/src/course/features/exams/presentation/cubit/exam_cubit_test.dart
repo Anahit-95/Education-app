@@ -58,6 +58,8 @@ void main() {
     );
   });
 
+  tearDown(() => cubit.close());
+
   test('initial state should be [ExamInitial]', () {
     expect(cubit.state, const ExamInitial());
   });
