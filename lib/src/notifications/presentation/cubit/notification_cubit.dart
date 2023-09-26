@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:dartz/dartz.dart';
+import 'package:educational_app/core/errors/failures.dart';
 import 'package:educational_app/src/notifications/domain/entities/notification.dart';
 import 'package:educational_app/src/notifications/domain/usecases/clear.dart';
 import 'package:educational_app/src/notifications/domain/usecases/clear_all.dart';
@@ -69,12 +72,33 @@ class NotificationCubit extends Cubit<NotificationState> {
     );
   }
 
-  Stream<Either<NotificationError, List<Notification>>> getNotifications() {
-    return _getNotifications().map((result) {
-      return result.fold(
-        (failure) => Left(NotificationError(failure.errorMessage)),
-        Right.new,
-      );
-    });
+  // Stream<Either<NotificationError, List<Notification>>> getNotifications() {
+  //   return _getNotifications().map((result) {
+  //     return result.fold(
+  //       (failure) => Left(NotificationError(failure.errorMessage)),
+  //       Right.new,
+  //     );
+  //   });
+  // }
+
+  void getNotifications() {
+    emit(const GettingNotifications());
+    StreamSubscription<Either<Failure, List<Notification>>>? subscription;
+    subscription = _getNotifications().listen(
+      (result) {
+        result.fold(
+          (failure) {
+            emit(NotificationError(failure.errorMessage));
+            subscription?.cancel();
+          },
+          (notifications) => emit(NotificationsLoaded(notifications)),
+        );
+      },
+      onError: (dynamic error) {
+        emit(NotificationError(error.toString()));
+        subscription?.cancel();
+      },
+      onDone: () => subscription?.cancel(),
+    );
   }
 }

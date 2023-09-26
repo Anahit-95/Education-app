@@ -223,44 +223,87 @@ void main() {
   });
 
   group('getNotifications', () {
-    final tNotification = NotificationModel.empty();
-
-    test(
-      'should return [Stream<Either<NotificationError, List<Notification>>>] '
-      'when successful',
-      () async {
+    final tNotifications = [NotificationModel.empty()];
+    blocTest<NotificationCubit, NotificationState>(
+      'should emit '
+      '[GettingNotifications, NotificationsLoaded] when successful',
+      build: () {
         when(
           () => getNotifications(),
-        ).thenAnswer((_) => Stream.value(Right([tNotification])));
-
-        final result = cubit.getNotifications();
-        expect(
-          result,
-          isA<Stream<Either<NotificationError, List<Notification>>>>(),
-        );
-
+        ).thenAnswer((_) => Stream.value(Right(tNotifications)));
+        return cubit;
+      },
+      act: (cubit) => cubit.getNotifications(),
+      expect: () => <NotificationState>[
+        const GettingNotifications(),
+        NotificationsLoaded(tNotifications),
+      ],
+      verify: (_) {
         verify(() => getNotifications()).called(1);
         verifyNoMoreInteractions(getNotifications);
       },
     );
 
-    test(
-      'should return [Stream<Either<NotificationError, List<Notification>>>] '
-      'when unsuccessful',
-      () async {
+    blocTest<NotificationCubit, NotificationState>(
+      'should emit '
+      '[GettingNotifications, NotificationError] when unsuccessful',
+      build: () {
         when(
           () => getNotifications(),
         ).thenAnswer((_) => Stream.value(Left(tFailure)));
-
-        final result = cubit.getNotifications();
-        expect(
-          result,
-          isA<Stream<Either<NotificationError, List<Notification>>>>(),
-        );
-
+        return cubit;
+      },
+      act: (cubit) => cubit.getNotifications(),
+      expect: () => <NotificationState>[
+        const GettingNotifications(),
+        NotificationError(tFailure.errorMessage),
+      ],
+      verify: (_) {
         verify(() => getNotifications()).called(1);
         verifyNoMoreInteractions(getNotifications);
       },
     );
   });
+
+  // group('getNotifications', () {
+  //   final tNotification = NotificationModel.empty();
+
+  //   test(
+  //     'should return [Stream<Either<NotificationError, List<Notification>>>] '
+  //     'when successful',
+  //     () async {
+  //       when(
+  //         () => getNotifications(),
+  //       ).thenAnswer((_) => Stream.value(Right([tNotification])));
+
+  //       final result = cubit.getNotifications();
+  //       expect(
+  //         result,
+  //         isA<Stream<Either<NotificationError, List<Notification>>>>(),
+  //       );
+
+  //       verify(() => getNotifications()).called(1);
+  //       verifyNoMoreInteractions(getNotifications);
+  //     },
+  //   );
+
+  //   test(
+  //     'should return [Stream<Either<NotificationError, List<Notification>>>] '
+  //     'when unsuccessful',
+  //     () async {
+  //       when(
+  //         () => getNotifications(),
+  //       ).thenAnswer((_) => Stream.value(Left(tFailure)));
+
+  //       final result = cubit.getNotifications();
+  //       expect(
+  //         result,
+  //         isA<Stream<Either<NotificationError, List<Notification>>>>(),
+  //       );
+
+  //       verify(() => getNotifications()).called(1);
+  //       verifyNoMoreInteractions(getNotifications);
+  //     },
+  //   );
+  // });
 }

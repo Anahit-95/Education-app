@@ -11,16 +11,28 @@ class NotificationInitial extends NotificationState {
   const NotificationInitial();
 }
 
-class ClearingNotifications extends NotificationState {
-  const ClearingNotifications();
+class GettingNotifications extends NotificationState {
+  const GettingNotifications();
 }
 
 class SendingNotification extends NotificationState {
   const SendingNotification();
 }
 
+class ClearingNotifications extends NotificationState {
+  const ClearingNotifications();
+}
+
 class NotificationSent extends NotificationState {
   const NotificationSent();
+}
+
+class NotificationsLoaded extends NotificationState {
+  const NotificationsLoaded(this.notifications);
+  final List<Notification> notifications;
+
+  @override
+  List<Object> get props => notifications;
 }
 
 class NotificationError extends NotificationState {
