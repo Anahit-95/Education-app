@@ -4,6 +4,7 @@ import 'package:educational_app/core/services/injection_container.dart';
 import 'package:educational_app/src/course/features/videos/presentaation/cubit/video_cubit.dart';
 import 'package:educational_app/src/course/presentation/cubit/course_cubit.dart';
 import 'package:educational_app/src/home/presentation/views/home_view.dart';
+import 'package:educational_app/src/notifications/presentation/cubit/notification_cubit.dart';
 import 'package:educational_app/src/profile/presentation/views/profile_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,6 +20,7 @@ class DashboardController extends ChangeNotifier {
             providers: [
               BlocProvider(create: (_) => sl<CourseCubit>()),
               BlocProvider(create: (_) => sl<VideoCubit>()),
+              BlocProvider(create: (_) => sl<NotificationCubit>()),
             ],
             child: const HomeView(),
           ),
