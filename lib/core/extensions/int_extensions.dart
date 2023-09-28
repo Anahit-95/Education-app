@@ -5,4 +5,8 @@ extension IntExt on int {
     if (data == this) data = this - 5;
     return 'over $data';
   }
+
+  String get pluralize {
+    return this > 1 ? 's' : '';
+  }
 }

@@ -57,8 +57,42 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       );
     case CourseDetailsScreen.routeName:
       return _pageBuilder(
-          (_) => CourseDetailsScreen(settings.arguments! as Course),
-          settings: settings);
+        (_) => CourseDetailsScreen(settings.arguments! as Course),
+        settings: settings,
+      );
+    case AddVideoView.routeName:
+      return _pageBuilder(
+        (_) => MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (_) => sl<CourseCubit>()),
+            BlocProvider(create: (_) => sl<VideoCubit>()),
+          ],
+          child: const AddVideoView(),
+        ),
+        settings: settings,
+      );
+    case AddMaterialsView.routeName:
+      return _pageBuilder(
+        (_) => MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (_) => sl<CourseCubit>()),
+            BlocProvider(create: (_) => sl<MaterialCubit>()),
+          ],
+          child: const AddMaterialsView(),
+        ),
+        settings: settings,
+      );
+    case AddExamView.routeName:
+      return _pageBuilder(
+        (_) => MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (_) => sl<CourseCubit>()),
+            BlocProvider(create: (_) => sl<ExamCubit>()),
+          ],
+          child: const AddExamView(),
+        ),
+        settings: settings,
+      );
     default:
       return _pageBuilder(
         (_) => const PageUnderConstruction(),

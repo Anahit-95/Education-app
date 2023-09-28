@@ -1,11 +1,14 @@
 import 'package:badges/badges.dart';
 import 'package:educational_app/core/common/views/loading_view.dart';
 import 'package:educational_app/core/common/widgets/nested_back_button.dart';
+import 'package:educational_app/core/enums/notification_enum.dart';
 import 'package:educational_app/core/extensions/context_extension.dart';
 import 'package:educational_app/core/utils/core_utils.dart';
+import 'package:educational_app/src/notifications/data/models/notification_model.dart';
 import 'package:educational_app/src/notifications/presentation/cubit/notification_cubit.dart';
 import 'package:educational_app/src/notifications/presentation/widgets/no_notifications.dart';
 import 'package:educational_app/src/notifications/presentation/widgets/notification_options.dart';
+import 'package:educational_app/src/notifications/presentation/widgets/notification_tile.dart';
 import 'package:flutter/material.dart' hide Badge;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -48,14 +51,13 @@ class _NotificationsViewState extends State<NotificationsView> {
             return const NoNotifications();
           } else if (state is NotificationsLoaded) {
             return ListView.builder(
-              itemCount: 1 /*state.notifications.length*/,
+              itemCount: state.notifications.length,
               itemBuilder: (_, index) {
                 final notification = state.notifications[index];
                 return Badge(
                   showBadge: !notification.seen,
                   position: BadgePosition.topEnd(top: 30, end: 20),
-                  // child: NotificationTile(notification),
-                  child: Placeholder(),
+                  child: NotificationTile(notification),
                 );
               },
             );

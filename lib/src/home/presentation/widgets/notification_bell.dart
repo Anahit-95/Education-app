@@ -63,7 +63,7 @@ class _NotificationBellState extends State<NotificationBell> {
           return Padding(
             padding: const EdgeInsets.only(right: 8),
             child: GestureDetector(
-              onTap: () async {
+              onTap: () {
                 context.push(
                   BlocProvider(
                     create: (_) => sl<NotificationCubit>(),
