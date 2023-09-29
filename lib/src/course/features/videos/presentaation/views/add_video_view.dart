@@ -1,3 +1,5 @@
+import 'package:educational_app/core/common/widgets/course_picker.dart';
+import 'package:educational_app/core/common/widgets/info_field.dart';
 import 'package:educational_app/core/extensions/string_extensions.dart';
 import 'package:educational_app/src/course/domain/entities/course.dart';
 import 'package:flutter/material.dart';
@@ -47,6 +49,8 @@ class _AddVideoViewState extends State<AddVideoView> {
     });
   }
 
+  void fetchVideo() {}
+
   @override
   void dispose() {
     urlController.dispose();
@@ -70,7 +74,25 @@ class _AddVideoViewState extends State<AddVideoView> {
       body: ListView(
         padding: const EdgeInsets.all(20),
         shrinkWrap: true,
-        children: [],
+        children: [
+          Form(
+            key: formKey,
+            child: CoursePicker(
+              controller: courseController,
+              notifier: courseNotifier,
+            ),
+          ),
+          const SizedBox(height: 20),
+          InfoField(
+            controller: urlController,
+            hintText: 'Enter video URL',
+            onEditingComplete: fetchVideo,
+            focusNode: urlFocusNode,
+            onTapOutside: (_) => urlFocusNode.unfocus(),
+            autoFocus: true,
+            keyboardType: TextInputType.url,
+          ),
+        ],
       ),
     );
   }
