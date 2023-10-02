@@ -32,35 +32,40 @@ class InfoField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final defaultBorder = OutlineInputBorder(
+    const defaultBorder = OutlineInputBorder(
       borderSide: BorderSide(
         color: Colours.primaryColour,
       ),
     );
-    return TextField(
-      controller: controller,
-      autofocus: autoFocus,
-      focusNode: focusNode,
-      keyboardType: keyboardType,
-      onEditingComplete: onEditingComplete,
-      onTapOutside:
-          onTapOutside ?? (_) => FocusManager.instance.primaryFocus?.unfocus(),
-      onChanged: onChanged,
-      decoration: InputDecoration(
-        hintText: hintText,
-        labelText: labelText,
-        border: border ? defaultBorder : null,
-        enabledBorder: border ? defaultBorder : null,
-        contentPadding:
-            border ? const EdgeInsets.symmetric(horizontal: 10) : null,
-        suffixIcon: suffixIcon ??
-            (controller.text.trim().isEmpty
-                ? null
-                : IconButton(
-                    icon: const Icon(Icons.clear),
-                    onPressed: controller.clear,
-                  )),
-      ),
+    return ListenableBuilder(
+      listenable: controller,
+      builder: (_, __) {
+        return TextField(
+          controller: controller,
+          autofocus: autoFocus,
+          focusNode: focusNode,
+          keyboardType: keyboardType,
+          onEditingComplete: onEditingComplete,
+          onTapOutside: onTapOutside ??
+              (_) => FocusManager.instance.primaryFocus?.unfocus(),
+          onChanged: onChanged,
+          decoration: InputDecoration(
+            hintText: hintText,
+            labelText: labelText,
+            border: border ? defaultBorder : null,
+            enabledBorder: border ? defaultBorder : null,
+            contentPadding:
+                border ? const EdgeInsets.symmetric(horizontal: 10) : null,
+            suffixIcon: suffixIcon ??
+                (controller.text.trim().isEmpty
+                    ? null
+                    : IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: controller.clear,
+                      )),
+          ),
+        );
+      },
     );
   }
 }

@@ -1,8 +1,18 @@
 import 'package:educational_app/core/common/widgets/course_picker.dart';
 import 'package:educational_app/core/common/widgets/info_field.dart';
+import 'package:educational_app/core/common/widgets/video_tile.dart';
+import 'package:educational_app/core/enums/notification_enum.dart';
 import 'package:educational_app/core/extensions/string_extensions.dart';
+import 'package:educational_app/core/utils/core_utils.dart';
 import 'package:educational_app/src/course/domain/entities/course.dart';
+import 'package:educational_app/src/course/features/videos/data/models/video_model.dart';
+import 'package:educational_app/src/course/features/videos/presentaation/cubit/video_cubit.dart';
+import 'package:educational_app/src/course/features/videos/presentaation/utils/video_utils.dart';
+import 'package:educational_app/src/notifications/presentation/widgets/notification_wrapper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' show PreviewData;
+import 'package:flutter_link_previewer/flutter_link_previewer.dart';
 
 class AddVideoView extends StatefulWidget {
   const AddVideoView({super.key});
@@ -22,6 +32,9 @@ class _AddVideoViewState extends State<AddVideoView> {
 
   final formKey = GlobalKey<FormState>();
 
+  VideoModel? video;
+  PreviewData? previewData;
+
   final authorFocusNode = FocusNode();
   final titleFocusNode = FocusNode();
   final urlFocusNode = FocusNode();
@@ -31,6 +44,8 @@ class _AddVideoViewState extends State<AddVideoView> {
   bool get isYoutube => urlController.text.trim().isYoutubeVideo;
 
   bool thumbNailsFile = false;
+  bool loading = false;
+  bool showingDialog = false;
 
   void reset() {
     setState(() {
@@ -38,6 +53,9 @@ class _AddVideoViewState extends State<AddVideoView> {
       authorController.text = 'dbestech';
       titleController.clear();
       getMoreDetails = false;
+      loading = false;
+      video = null;
+      previewData = null;
     });
   }
 
@@ -49,7 +67,29 @@ class _AddVideoViewState extends State<AddVideoView> {
     });
   }
 
-  void fetchVideo() {}
+  Future<void> fetchVideo() async {
+    if (urlController.text.trim().isEmpty) return;
+    FocusManager.instance.primaryFocus?.unfocus();
+    setState(() {
+      getMoreDetails = false;
+      loading = false;
+      thumbNailsFile = false;
+      video = null;
+      previewData = null;
+    });
+    setState(() {
+      loading = true;
+    });
+    if (isYoutube) {
+      video = await VideoUtils.getVideoFromYT(
+        context,
+        url: urlController.text.trim(),
+      ) as VideoModel?;
+      setState(() {
+        loading = false;
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -66,33 +106,161 @@ class _AddVideoViewState extends State<AddVideoView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text('Add Video'),
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(20),
-        shrinkWrap: true,
-        children: [
-          Form(
-            key: formKey,
-            child: CoursePicker(
-              controller: courseController,
-              notifier: courseNotifier,
-            ),
+    return NotificationWrapper(
+      onNotificationSent: () {
+        Navigator.of(context).pop();
+      },
+      child: BlocListener<VideoCubit, VideoState>(
+        listener: (context, state) {
+          if (showingDialog == true) {
+            Navigator.pop(context);
+          }
+          if (state is AddingVideo) {
+            CoreUtils.showLoadingDialog(context);
+            showingDialog = true;
+          } else if (state is VideoError) {
+            CoreUtils.showSnackBar(context, state.message);
+          } else if (state is VideoAdded) {
+            CoreUtils.showSnackBar(context, 'Video added successfully');
+            CoreUtils.sendNotification(
+              title: 'New ${courseNotifier.value!.title} video '
+                  '${courseNotifier.value!.title}',
+              body: 'A new video has been added for',
+              category: NotificationCategory.VIDEO,
+            );
+          }
+        },
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          appBar: AppBar(
+            title: const Text('Add Video'),
           ),
-          const SizedBox(height: 20),
-          InfoField(
-            controller: urlController,
-            hintText: 'Enter video URL',
-            onEditingComplete: fetchVideo,
-            focusNode: urlFocusNode,
-            onTapOutside: (_) => urlFocusNode.unfocus(),
-            autoFocus: true,
-            keyboardType: TextInputType.url,
+          body: ListView(
+            padding: const EdgeInsets.all(20),
+            shrinkWrap: true,
+            children: [
+              Form(
+                key: formKey,
+                child: CoursePicker(
+                  controller: courseController,
+                  notifier: courseNotifier,
+                ),
+              ),
+              const SizedBox(height: 20),
+              InfoField(
+                controller: urlController,
+                hintText: 'Enter video URL',
+                onEditingComplete: fetchVideo,
+                focusNode: urlFocusNode,
+                onTapOutside: (_) => urlFocusNode.unfocus(),
+                autoFocus: true,
+                keyboardType: TextInputType.url,
+              ),
+              ListenableBuilder(
+                listenable: urlController,
+                builder: (_, __) {
+                  return Column(
+                    children: [
+                      if (urlController.text.trim().isNotEmpty) ...[
+                        const SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: fetchVideo,
+                          child: const Text('Fetch Video'),
+                        ),
+                      ],
+                    ],
+                  );
+                },
+              ),
+              if (loading && !isYoutube)
+                LinkPreview(
+                  onPreviewDataFetched: (data) async {
+                    setState(() {
+                      thumbNailsFile = false;
+                      video = VideoModel.empty().copyWith(
+                        thumbnail: data.image?.url,
+                        videoUrl: urlController.text.trim(),
+                        title: data.title ?? 'No title',
+                      );
+                      if (data.image?.url != null) loading = false;
+                      getMoreDetails = true;
+                      titleController.text = data.title ?? '';
+                    });
+                  },
+                  previewData: previewData,
+                  text: '',
+                  width: 0,
+                ),
+              if (video != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: VideoTile(
+                    video!,
+                    isFile: thumbNailsFile,
+                    uploadTimePrefix: '~',
+                  ),
+                ),
+              if (getMoreDetails) ...[
+                InfoField(
+                  controller: authorController,
+                  keyboardType: TextInputType.name,
+                  autoFocus: true,
+                  focusNode: authorFocusNode,
+                  labelText: 'Tutor Name',
+                  onEditingComplete: () {
+                    setState(() {});
+                    titleFocusNode.requestFocus();
+                  },
+                ),
+                InfoField(
+                  controller: titleController,
+                  labelText: 'Video Title',
+                  focusNode: titleFocusNode,
+                  onEditingComplete: () {
+                    FocusManager.instance.primaryFocus?.unfocus();
+                    setState(() {});
+                  },
+                ),
+              ],
+              const SizedBox(height: 20),
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    /* If the [video] is not null, but the video.tutor is null,
+                      then we check if the authorName field is not empty, if it is
+                      not empty, we set the video.tutor to become the value of the
+                      authorName controller */
+                    if (formKey.currentState!.validate()) {
+                      if (courseNotifier.value == null) {
+                        CoreUtils.showSnackBar(context, 'Please Pick a course');
+                        return;
+                      }
+                      if (courseNotifier.value != null &&
+                          video != null &&
+                          video!.tutor == null &&
+                          authorController.text.trim().isNotEmpty) {
+                        video = video!.copyWith(
+                          tutor: authorController.text.trim(),
+                        );
+                      }
+                      if (video != null &&
+                          video!.thumbnail != null &&
+                          video!.tutor != null) {
+                        video = video?.copyWith(
+                          thumbnailIsFile: thumbNailsFile,
+                          courseId: courseNotifier.value!.id,
+                          uploadDate: DateTime.now(),
+                        );
+                        context.read<VideoCubit>().addVideo(video!);
+                      }
+                    }
+                  },
+                  child: null,
+                ),
+              )
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

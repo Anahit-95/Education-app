@@ -1,10 +1,8 @@
 import 'package:badges/badges.dart';
 import 'package:educational_app/core/common/views/loading_view.dart';
 import 'package:educational_app/core/common/widgets/nested_back_button.dart';
-import 'package:educational_app/core/enums/notification_enum.dart';
 import 'package:educational_app/core/extensions/context_extension.dart';
 import 'package:educational_app/core/utils/core_utils.dart';
-import 'package:educational_app/src/notifications/data/models/notification_model.dart';
 import 'package:educational_app/src/notifications/presentation/cubit/notification_cubit.dart';
 import 'package:educational_app/src/notifications/presentation/widgets/no_notifications.dart';
 import 'package:educational_app/src/notifications/presentation/widgets/notification_options.dart';

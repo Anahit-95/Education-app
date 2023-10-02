@@ -2,6 +2,7 @@ import 'package:educational_app/core/utils/core_utils.dart';
 import 'package:educational_app/src/course/features/videos/data/models/video_model.dart';
 import 'package:educational_app/src/course/features/videos/domain/entities/video.dart';
 import 'package:flutter/widgets.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_metadata/youtube.dart';
 
 class VideoUtils {
@@ -46,5 +47,16 @@ class VideoUtils {
       showSnack('PLEASE TRY AGAIN\n$e');
     }
     return null;
+  }
+
+  static Future<void> playVideo(BuildContext context, String videoUrl) async {
+    if (!await launchUrl(
+      Uri.parse(videoUrl),
+      mode: LaunchMode.externalApplication,
+    )) {
+      CoreUtils.showSnackBar(context, 'Could not launch $videoUrl');
+    } else {
+      // context.push(VideoPlayerView())
+    }
   }
 }
