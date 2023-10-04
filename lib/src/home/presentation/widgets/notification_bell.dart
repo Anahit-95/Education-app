@@ -3,6 +3,7 @@ import 'package:badges/badges.dart';
 import 'package:educational_app/core/common/app/provider/notification_notifier.dart';
 import 'package:educational_app/core/extensions/context_extension.dart';
 import 'package:educational_app/core/services/injection_container.dart';
+import 'package:educational_app/core/utils/core_utils.dart';
 import 'package:educational_app/src/notifications/presentation/cubit/notification_cubit.dart';
 import 'package:educational_app/src/notifications/presentation/views/notifications_view.dart';
 import 'package:flutter/material.dart' hide Badge;
@@ -52,6 +53,8 @@ class _NotificationBellState extends State<NotificationBell> {
             }
           }
           notificationCount = state.notifications.length;
+        } else if (state is NotificationError) {
+          CoreUtils.showSnackBar(context, state.message);
         }
       },
       builder: (context, state) {
@@ -65,8 +68,8 @@ class _NotificationBellState extends State<NotificationBell> {
             child: GestureDetector(
               onTap: () {
                 context.push(
-                  BlocProvider(
-                    create: (_) => sl<NotificationCubit>(),
+                  BlocProvider.value(
+                    value: sl<NotificationCubit>(),
                     child: const NotificationsView(),
                   ),
                 );
@@ -86,7 +89,10 @@ class _NotificationBellState extends State<NotificationBell> {
             ),
           );
         }
-        return const Icon(IconlyLight.notification);
+        return const Padding(
+          padding: EdgeInsets.only(right: 8),
+          child: Icon(IconlyLight.notification),
+        );
       },
     );
   }

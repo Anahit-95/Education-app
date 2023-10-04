@@ -75,6 +75,7 @@ class _AddCourseSheetState extends State<AddCourseSheet> {
             CoreUtils.showSnackBar(context, 'Course added successfully.');
             CoreUtils.showLoadingDialog(context);
             CoreUtils.sendNotification(
+              context,
               title: 'New Course(${titleController.text.trim()})',
               body: 'A new course has been added',
               category: NotificationCategory.COURSE,

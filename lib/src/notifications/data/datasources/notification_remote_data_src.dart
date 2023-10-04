@@ -6,6 +6,7 @@ import 'package:educational_app/core/utils/datasource_utils.dart';
 import 'package:educational_app/src/notifications/data/models/notification_model.dart';
 import 'package:educational_app/src/notifications/domain/entities/notification.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 
 abstract class NotificationRemoteDataSrc {
   const NotificationRemoteDataSrc();
@@ -91,17 +92,21 @@ class NotificationRemoteDataSrcImpl implements NotificationRemoteDataSrc {
           .orderBy('sentAt', descending: true)
           .snapshots()
           .map(
-            (snapshot) => snapshot.docs
-                .map((doc) => NotificationModel.fromMap(doc.data()))
-                .toList(),
+            (snapshot) => snapshot.docs.map((doc) {
+              debugPrint(doc.data().toString());
+              return NotificationModel.fromMap(doc.data());
+            }).toList(),
           );
-      return notificationsStream.handleError((dynamic error) {
+      return notificationsStream
+          .handleError((dynamic error, dynamic stackTrace) {
         if (error is FirebaseException) {
           throw ServerException(
             message: error.message ?? 'Unknown error occured',
             statusCode: error.code,
           );
         }
+        debugPrint(error.toString());
+        debugPrint(stackTrace.toString());
         throw ServerException(
           message: error.toString(),
           statusCode: '505',
@@ -167,6 +172,7 @@ class NotificationRemoteDataSrcImpl implements NotificationRemoteDataSrc {
           for (final user in userBatch) {
             final newNotificationRef =
                 user.reference.collection('notifications').doc();
+
             batch.set(
               newNotificationRef,
               (notification as NotificationModel)
@@ -181,6 +187,9 @@ class NotificationRemoteDataSrcImpl implements NotificationRemoteDataSrc {
         for (final user in users.docs) {
           final newNotificationRef =
               user.reference.collection('notifications').doc();
+          print('sending...');
+          print((notification as NotificationModel).toMap());
+          print('done');
           batch.set(
             newNotificationRef,
             (notification as NotificationModel)

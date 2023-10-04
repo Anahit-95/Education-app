@@ -8,6 +8,7 @@ import 'package:educational_app/src/course/features/materials/presentation/views
 import 'package:educational_app/src/course/features/videos/presentaation/views/add_video_view.dart';
 import 'package:educational_app/src/course/presentation/cubit/course_cubit.dart';
 import 'package:educational_app/src/course/presentation/widgets/add_course_sheet.dart';
+import 'package:educational_app/src/notifications/presentation/cubit/notification_cubit.dart';
 import 'package:educational_app/src/profile/presentation/widgets/admin_button.dart';
 import 'package:educational_app/src/profile/presentation/widgets/user_info_card.dart';
 import 'package:flutter/material.dart';
@@ -98,8 +99,15 @@ class ProfileBody extends StatelessWidget {
                     showDragHandle: true,
                     elevation: 0,
                     useSafeArea: true,
-                    builder: (_) => BlocProvider(
-                      create: (_) => sl<CourseCubit>(),
+                    builder: (_) => MultiBlocProvider(
+                      providers: [
+                        BlocProvider(
+                          create: (_) => sl<CourseCubit>(),
+                        ),
+                        BlocProvider(
+                          create: (context) => sl<NotificationCubit>(),
+                        ),
+                      ],
                       child: const AddCourseSheet(),
                     ),
                   );

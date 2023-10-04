@@ -15,6 +15,7 @@ import 'package:educational_app/src/course/features/videos/presentaation/views/a
 import 'package:educational_app/src/course/presentation/cubit/course_cubit.dart';
 import 'package:educational_app/src/course/presentation/views/course_details_screen.dart';
 import 'package:educational_app/src/dashboard/presentation/views/dashboard.dart';
+import 'package:educational_app/src/notifications/presentation/cubit/notification_cubit.dart';
 import 'package:educational_app/src/on_boarding/data/datasources/on_boarding_local_data_source.dart';
 import 'package:educational_app/src/on_boarding/presentation/cubit/on_boarding_cubit.dart';
 import 'package:educational_app/src/on_boarding/presentation/views/on_boarding_screen.dart';

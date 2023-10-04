@@ -1,5 +1,6 @@
 import 'package:educational_app/core/common/widgets/course_picker.dart';
 import 'package:educational_app/core/common/widgets/info_field.dart';
+import 'package:educational_app/core/common/widgets/reactive_button.dart';
 import 'package:educational_app/core/common/widgets/video_tile.dart';
 import 'package:educational_app/core/enums/notification_enum.dart';
 import 'package:educational_app/core/extensions/string_extensions.dart';
@@ -65,6 +66,12 @@ class _AddVideoViewState extends State<AddVideoView> {
     urlController.addListener(() {
       if (urlController.text.trim().isEmpty) reset();
     });
+    authorController.addListener(() {
+      video = video?.copyWith(tutor: authorController.text.trim());
+    });
+    titleController.addListener(() {
+      video = video?.copyWith(title: titleController.text.trim());
+    });
   }
 
   Future<void> fetchVideo() async {
@@ -123,9 +130,10 @@ class _AddVideoViewState extends State<AddVideoView> {
           } else if (state is VideoAdded) {
             CoreUtils.showSnackBar(context, 'Video added successfully');
             CoreUtils.sendNotification(
-              title: 'New ${courseNotifier.value!.title} video '
+              context,
+              title: 'New ${courseNotifier.value!.title} video',
+              body: 'A new video has been added for '
                   '${courseNotifier.value!.title}',
-              body: 'A new video has been added for',
               category: NotificationCategory.VIDEO,
             );
           }
@@ -185,6 +193,7 @@ class _AddVideoViewState extends State<AddVideoView> {
                       if (data.image?.url != null) loading = false;
                       getMoreDetails = true;
                       titleController.text = data.title ?? '';
+                      loading = false;
                     });
                   },
                   previewData: previewData,
@@ -224,12 +233,11 @@ class _AddVideoViewState extends State<AddVideoView> {
               ],
               const SizedBox(height: 20),
               Center(
-                child: ElevatedButton(
+                child: ReactiveButton(
+                  disabled: video == null,
+                  loading: loading,
+                  text: 'Submit',
                   onPressed: () {
-                    /* If the [video] is not null, but the video.tutor is null,
-                      then we check if the authorName field is not empty, if it is
-                      not empty, we set the video.tutor to become the value of the
-                      authorName controller */
                     if (formKey.currentState!.validate()) {
                       if (courseNotifier.value == null) {
                         CoreUtils.showSnackBar(context, 'Please Pick a course');
@@ -244,18 +252,23 @@ class _AddVideoViewState extends State<AddVideoView> {
                         );
                       }
                       if (video != null &&
-                          video!.thumbnail != null &&
-                          video!.tutor != null) {
+                          video!.tutor != null &&
+                          video!.title != null &&
+                          video!.title!.isNotEmpty) {
                         video = video?.copyWith(
                           thumbnailIsFile: thumbNailsFile,
                           courseId: courseNotifier.value!.id,
                           uploadDate: DateTime.now(),
                         );
                         context.read<VideoCubit>().addVideo(video!);
+                      } else {
+                        CoreUtils.showSnackBar(
+                          context,
+                          'Please fill alll fields.',
+                        );
                       }
                     }
                   },
-                  child: null,
                 ),
               )
             ],

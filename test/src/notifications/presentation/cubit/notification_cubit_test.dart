@@ -55,7 +55,7 @@ void main() {
   group('clear', () {
     blocTest<NotificationCubit, NotificationState>(
       'should emit '
-      '[ClearingNotifications, NotificationInitial] when successful',
+      '[ClearingNotifications, NotificationCleared] when successful',
       build: () {
         when(
           () => clear(any()),
@@ -65,7 +65,7 @@ void main() {
       act: (cubit) => cubit.clear('id'),
       expect: () => const <NotificationState>[
         ClearingNotifications(),
-        NotificationInitial(),
+        NotificationCleared(),
       ],
       verify: (_) {
         verify(() => clear('id')).called(1);
@@ -97,7 +97,7 @@ void main() {
   group('clearAll', () {
     blocTest<NotificationCubit, NotificationState>(
       'should emit '
-      '[ClearingNotifications, NotificationInitial] when successful',
+      '[ClearingNotifications, NotificationCleared] when successful',
       build: () {
         when(
           () => clearAll(),
@@ -107,7 +107,7 @@ void main() {
       act: (cubit) => cubit.clearAll(),
       expect: () => const <NotificationState>[
         ClearingNotifications(),
-        NotificationInitial(),
+        NotificationCleared(),
       ],
       verify: (_) {
         verify(() => clearAll()).called(1);

@@ -1,5 +1,6 @@
 import 'package:educational_app/core/common/views/loading_view.dart';
 import 'package:educational_app/core/common/widgets/not_found_text.dart';
+import 'package:educational_app/core/common/widgets/video_tile.dart';
 import 'package:educational_app/core/extensions/context_extension.dart';
 import 'package:educational_app/core/services/injection_container.dart';
 import 'package:educational_app/core/utils/core_utils.dart';
@@ -49,7 +50,7 @@ class _HomeVideosState extends State<HomeVideos> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SectionHeader(
-                sectionTitle: '{context.courseOfTheDay!.title} Videos',
+                sectionTitle: '${context.courseOfTheDay!.title} Videos',
                 seeAll: state.videos.length > 4,
                 onSeeAll: () => context.push(
                   BlocProvider(
@@ -59,7 +60,11 @@ class _HomeVideosState extends State<HomeVideos> {
                 ),
               ),
               const SizedBox(height: 20),
-              for (final video in state.videos.take(5)) const Placeholder(),
+              for (final video in state.videos.take(5))
+                VideoTile(
+                  video,
+                  tappable: true,
+                ),
             ],
           );
         }
