@@ -17,13 +17,13 @@ void main() {
   });
 
   test(
-    'should return a [Stream<List<Notification>>]',
+    'should return a [Stream<List<Notification>>] from the [NotificationRepo]',
     () async {
-      when(
-        () => repo.getNotifications(),
-      ).thenAnswer((_) => Stream.value(const Right([])));
+      when(() => repo.getNotifications())
+          .thenAnswer((_) => Stream.value(const Right([])));
 
       final result = usecase();
+
       expect(result, emits(const Right<dynamic, List<Notification>>([])));
 
       verify(() => repo.getNotifications()).called(1);
