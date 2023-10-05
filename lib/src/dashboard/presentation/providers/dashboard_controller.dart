@@ -1,7 +1,7 @@
 import 'package:educational_app/core/common/app/provider/tab_navigator.dart';
 import 'package:educational_app/core/common/views/persistant_view.dart';
 import 'package:educational_app/core/services/injection_container.dart';
-import 'package:educational_app/src/course/features/videos/presentaation/cubit/video_cubit.dart';
+import 'package:educational_app/src/course/features/videos/presentation/cubit/video_cubit.dart';
 import 'package:educational_app/src/course/presentation/cubit/course_cubit.dart';
 import 'package:educational_app/src/home/presentation/views/home_view.dart';
 import 'package:educational_app/src/notifications/presentation/cubit/notification_cubit.dart';

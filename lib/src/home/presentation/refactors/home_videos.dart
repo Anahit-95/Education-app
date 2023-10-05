@@ -4,7 +4,7 @@ import 'package:educational_app/core/common/widgets/video_tile.dart';
 import 'package:educational_app/core/extensions/context_extension.dart';
 import 'package:educational_app/core/services/injection_container.dart';
 import 'package:educational_app/core/utils/core_utils.dart';
-import 'package:educational_app/src/course/features/videos/presentaation/cubit/video_cubit.dart';
+import 'package:educational_app/src/course/features/videos/presentation/cubit/video_cubit.dart';
 import 'package:educational_app/src/home/presentation/widgets/section_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

@@ -7,8 +7,8 @@ import 'package:educational_app/core/extensions/string_extensions.dart';
 import 'package:educational_app/core/utils/core_utils.dart';
 import 'package:educational_app/src/course/domain/entities/course.dart';
 import 'package:educational_app/src/course/features/videos/data/models/video_model.dart';
-import 'package:educational_app/src/course/features/videos/presentaation/cubit/video_cubit.dart';
-import 'package:educational_app/src/course/features/videos/presentaation/utils/video_utils.dart';
+import 'package:educational_app/src/course/features/videos/presentation/cubit/video_cubit.dart';
+import 'package:educational_app/src/course/features/videos/presentation/utils/video_utils.dart';
 import 'package:educational_app/src/notifications/presentation/widgets/notification_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -121,6 +121,7 @@ class _AddVideoViewState extends State<AddVideoView> {
         listener: (context, state) {
           if (showingDialog == true) {
             Navigator.pop(context);
+            showingDialog = false;
           }
           if (state is AddingVideo) {
             CoreUtils.showLoadingDialog(context);

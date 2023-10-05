@@ -5,7 +5,7 @@ import 'package:educational_app/core/res/media_res.dart';
 import 'package:educational_app/core/services/injection_container.dart';
 import 'package:educational_app/src/course/features/exams/presentation/views/add_exam_view.dart';
 import 'package:educational_app/src/course/features/materials/presentation/views/add_material_view.dart';
-import 'package:educational_app/src/course/features/videos/presentaation/views/add_video_view.dart';
+import 'package:educational_app/src/course/features/videos/presentation/views/add_video_view.dart';
 import 'package:educational_app/src/course/presentation/cubit/course_cubit.dart';
 import 'package:educational_app/src/course/presentation/widgets/add_course_sheet.dart';
 import 'package:educational_app/src/notifications/presentation/cubit/notification_cubit.dart';

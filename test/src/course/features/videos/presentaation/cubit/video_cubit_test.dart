@@ -4,7 +4,7 @@ import 'package:educational_app/core/errors/failures.dart';
 import 'package:educational_app/src/course/features/videos/data/models/video_model.dart';
 import 'package:educational_app/src/course/features/videos/domain/usecases/add_video.dart';
 import 'package:educational_app/src/course/features/videos/domain/usecases/get_videos.dart';
-import 'package:educational_app/src/course/features/videos/presentaation/cubit/video_cubit.dart';
+import 'package:educational_app/src/course/features/videos/presentation/cubit/video_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

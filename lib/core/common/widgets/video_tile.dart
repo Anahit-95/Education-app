@@ -5,7 +5,7 @@ import 'package:educational_app/core/extensions/string_extensions.dart';
 import 'package:educational_app/core/res/colours.dart';
 import 'package:educational_app/core/res/media_res.dart';
 import 'package:educational_app/src/course/features/videos/domain/entities/video.dart';
-import 'package:educational_app/src/course/features/videos/presentaation/utils/video_utils.dart';
+import 'package:educational_app/src/course/features/videos/presentation/utils/video_utils.dart';
 import 'package:flutter/material.dart';
 
 class VideoTile extends StatelessWidget {
