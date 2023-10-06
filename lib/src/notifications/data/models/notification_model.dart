@@ -14,16 +14,6 @@ class NotificationModel extends Notification {
     super.seen,
   });
 
-  NotificationModel.empty()
-      : this(
-          id: '_empty.id',
-          title: '_empty.title',
-          body: '_empty.body',
-          category: NotificationCategory.NONE,
-          seen: false,
-          sentAt: DateTime.now(),
-        );
-
   NotificationModel.fromMap(DataMap map)
       : super(
           id: map['id'] as String,
@@ -34,16 +24,15 @@ class NotificationModel extends Notification {
           sentAt: (map['sentAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
         );
 
-  DataMap toMap() {
-    return {
-      'id': id,
-      'title': title,
-      'body': body,
-      'category': category.value,
-      'seen': seen,
-      'sentAt': FieldValue.serverTimestamp(),
-    };
-  }
+  NotificationModel.empty()
+      : this(
+          id: '_empty.id',
+          title: '_empty.title',
+          body: '_empty.body',
+          category: NotificationCategory.NONE,
+          seen: false,
+          sentAt: DateTime.now(),
+        );
 
   NotificationModel copyWith({
     String? id,
@@ -62,4 +51,13 @@ class NotificationModel extends Notification {
       sentAt: sentAt ?? this.sentAt,
     );
   }
+
+  DataMap toMap() => {
+        'id': id,
+        'title': title,
+        'body': body,
+        'category': category.value,
+        'seen': seen,
+        'sentAt': FieldValue.serverTimestamp(),
+      };
 }

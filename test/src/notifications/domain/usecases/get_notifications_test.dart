@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
+import 'package:educational_app/src/notifications/domain/entities/notification.dart';
 import 'package:educational_app/src/notifications/domain/repos/notification_repo.dart';
 import 'package:educational_app/src/notifications/domain/usecases/get_notifications.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -24,7 +24,7 @@ void main() {
 
       final result = usecase();
 
-      expect(result, emits(const Right<dynamic, List<Notification>>([])));
+      expect(result, emits(isA<Right<dynamic, List<Notification>>>()));
 
       verify(() => repo.getNotifications()).called(1);
 

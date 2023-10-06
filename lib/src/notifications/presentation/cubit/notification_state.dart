@@ -33,6 +33,7 @@ class NotificationCleared extends NotificationState {
 
 class NotificationsLoaded extends NotificationState {
   const NotificationsLoaded(this.notifications);
+
   final List<Notification> notifications;
 
   @override
@@ -45,5 +46,5 @@ class NotificationError extends NotificationState {
   final String message;
 
   @override
-  List<String> get props => [message];
+  List<Object> get props => [message];
 }

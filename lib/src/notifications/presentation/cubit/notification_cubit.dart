@@ -14,20 +14,18 @@ import 'package:equatable/equatable.dart';
 part 'notification_state.dart';
 
 class NotificationCubit extends Cubit<NotificationState> {
-  NotificationCubit(
-      {required Clear clear,
-      required ClearAll clearAll,
-      required GetNotifications getNotifications,
-      required MarkAsRead markAsRead,
-      required SendNotification sendNotification})
-      : _clear = clear,
+  NotificationCubit({
+    required Clear clear,
+    required ClearAll clearAll,
+    required GetNotifications getNotifications,
+    required MarkAsRead markAsRead,
+    required SendNotification sendNotification,
+  })  : _clear = clear,
         _clearAll = clearAll,
         _getNotifications = getNotifications,
         _markAsRead = markAsRead,
         _sendNotification = sendNotification,
         super(const NotificationInitial());
-
-  // NotificationCubit() : super(NotificationInitial());
 
   final Clear _clear;
   final ClearAll _clearAll;

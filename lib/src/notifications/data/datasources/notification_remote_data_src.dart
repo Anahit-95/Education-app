@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:educational_app/core/errors/exceptions.dart';
 import 'package:educational_app/core/utils/datasource_utils.dart';
@@ -93,15 +91,16 @@ class NotificationRemoteDataSrcImpl implements NotificationRemoteDataSrc {
           .snapshots()
           .map(
             (snapshot) => snapshot.docs.map((doc) {
-              debugPrint(doc.data().toString());
               return NotificationModel.fromMap(doc.data());
             }).toList(),
           );
-      return notificationsStream
-          .handleError((dynamic error, dynamic stackTrace) {
+      return notificationsStream.handleError((
+        dynamic error,
+        dynamic stackTrace,
+      ) {
         if (error is FirebaseException) {
           throw ServerException(
-            message: error.message ?? 'Unknown error occured',
+            message: error.message ?? 'Unknown error occurred',
             statusCode: error.code,
           );
         }
@@ -115,11 +114,11 @@ class NotificationRemoteDataSrcImpl implements NotificationRemoteDataSrc {
     } on FirebaseException catch (e) {
       return Stream.error(
         ServerException(
-          message: e.message ?? 'Unknown error occured',
+          message: e.message ?? 'Unknown error occurred',
           statusCode: e.code,
         ),
       );
-    } on ServerException {
+    } on ServerException catch (e) {
       return Stream.error(e);
     } catch (e) {
       return Stream.error(

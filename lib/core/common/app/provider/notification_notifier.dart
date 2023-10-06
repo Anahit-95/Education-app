@@ -1,11 +1,13 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NotificationNotifier extends ChangeNotifier {
   NotificationNotifier(this._prefs) {
     _muteNotifications = _prefs.getBool(key) ?? false;
   }
+
   static const key = 'muteNotifications';
+
   final SharedPreferences _prefs;
   late bool _muteNotifications;
 
