@@ -1,6 +1,8 @@
 import 'package:educational_app/core/common/widgets/course_picker.dart';
 import 'package:educational_app/core/common/widgets/info_field.dart';
+import 'package:educational_app/core/enums/notification_enum.dart';
 import 'package:educational_app/core/extensions/context_extension.dart';
+import 'package:educational_app/core/extensions/int_extensions.dart';
 import 'package:educational_app/core/res/colours.dart';
 import 'package:educational_app/core/utils/core_utils.dart';
 import 'package:educational_app/src/course/domain/entities/course.dart';
@@ -10,8 +12,9 @@ import 'package:educational_app/src/course/features/materials/domain/entities/re
 import 'package:educational_app/src/course/features/materials/presentation/cubit/material_cubit.dart';
 import 'package:educational_app/src/course/features/materials/presentation/widgets/edit_resource_dialog.dart';
 import 'package:educational_app/src/course/features/materials/presentation/widgets/picked_resource_tile.dart';
+import 'package:educational_app/src/notifications/presentation/widgets/notification_wrapper.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide MaterialState;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddMaterialsView extends StatefulWidget {
@@ -32,6 +35,7 @@ class _AddMaterialsViewState extends State<AddMaterialsView> {
   final authorController = TextEditingController();
 
   bool authorSet = false;
+  bool showingLoader = false;
 
   Future<void> pickResources() async {
     final result = await FilePicker.platform.pickFiles(allowMultiple: true);
@@ -121,82 +125,116 @@ class _AddMaterialsViewState extends State<AddMaterialsView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(title: const Text('Add Materials')),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            children: [
-              Form(
-                key: formKey,
-                child: CoursePicker(
-                  controller: courseController,
-                  notifier: courseNotifier,
-                ),
-              ),
-              const SizedBox(height: 20),
-              InfoField(
-                controller: authorController,
-                border: true,
-                hintText: 'General Author',
-                onChanged: (_) {
-                  if (authorSet) setState(() => authorSet = false);
-                },
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    authorSet ? Icons.check_circle : Icons.check_circle_outline,
-                    color: authorSet ? Colors.green : Colors.grey,
-                  ),
-                  onPressed: setAuthor,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                'You can upload multiple materials at once',
-                style: context.theme.textTheme.bodySmall?.copyWith(
-                  color: Colours.neutralTextColour,
-                ),
-              ),
-              const SizedBox(height: 10),
-              if (resources.isNotEmpty) ...[
-                const SizedBox(height: 10),
-                Expanded(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: resources.length,
-                    padding: EdgeInsets.zero,
-                    itemBuilder: (_, index) {
-                      final resource = resources[index];
-                      return PickedResourceTile(resource,
-                          onEdit: () => editResource(index),
-                          onDelete: () {
-                            setState(() {
-                              resources.removeAt(index);
-                            });
-                          });
-                    },
-                  ),
-                ),
-                const SizedBox(height: 10),
-              ],
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+    return NotificationWrapper(
+      onNotificationSent: () {
+        Navigator.pop(context);
+      },
+      child: BlocListener<MaterialCubit, MaterialState>(
+        listener: (context, state) {
+          if (showingLoader) {
+            Navigator.pop(context);
+            showingLoader = false;
+          }
+          if (state is MaterialError) {
+            CoreUtils.showSnackBar(context, state.message);
+          } else if (state is MaterialsAdded) {
+            CoreUtils.showSnackBar(
+              context,
+              'Material(s) uploaded successfully',
+            );
+            CoreUtils.sendNotification(
+              context,
+              title: 'New ${courseNotifier.value!.title} '
+                  'Material${resources.length.pluralize}',
+              body: 'A new material has been '
+                  'uploaded for ${courseNotifier.value!.title}',
+              category: NotificationCategory.MATERIAL,
+            );
+          } else if (state is AddingMaterials) {
+            CoreUtils.showLoadingDialog(context);
+            showingLoader = true;
+          }
+        },
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          appBar: AppBar(title: const Text('Add Materials')),
+          body: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
                 children: [
-                  ElevatedButton(
-                    onPressed: pickResources,
-                    child: const Text('Add Materials'),
+                  Form(
+                    key: formKey,
+                    child: CoursePicker(
+                      controller: courseController,
+                      notifier: courseNotifier,
+                    ),
                   ),
-                  const SizedBox(width: 10),
-                  ElevatedButton(
-                    onPressed: uploadMaterials,
-                    child: const Text('Confirm'),
+                  const SizedBox(height: 20),
+                  InfoField(
+                    controller: authorController,
+                    border: true,
+                    hintText: 'General Author',
+                    onChanged: (_) {
+                      if (authorSet) setState(() => authorSet = false);
+                    },
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        authorSet
+                            ? Icons.check_circle
+                            : Icons.check_circle_outline,
+                        color: authorSet ? Colors.green : Colors.grey,
+                      ),
+                      onPressed: setAuthor,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    'You can upload multiple materials at once',
+                    style: context.theme.textTheme.bodySmall?.copyWith(
+                      color: Colours.neutralTextColour,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  if (resources.isNotEmpty) ...[
+                    const SizedBox(height: 10),
+                    Expanded(
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: resources.length,
+                        padding: EdgeInsets.zero,
+                        itemBuilder: (_, index) {
+                          final resource = resources[index];
+                          return PickedResourceTile(resource,
+                              onEdit: () => editResource(index),
+                              onDelete: () {
+                                setState(() {
+                                  resources.removeAt(index);
+                                });
+                              });
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                  ],
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        onPressed: pickResources,
+                        child: const Text('Add Materials'),
+                      ),
+                      const SizedBox(width: 10),
+                      ElevatedButton(
+                        onPressed: uploadMaterials,
+                        child: const Text('Confirm'),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
+            ),
           ),
         ),
       ),
