@@ -9,7 +9,7 @@ import 'package:educational_app/src/course/domain/entities/course.dart';
 import 'package:educational_app/src/course/features/materials/data/models/resource_model.dart';
 import 'package:educational_app/src/course/features/materials/domain/entities/picked_resource.dart';
 import 'package:educational_app/src/course/features/materials/domain/entities/resource.dart';
-import 'package:educational_app/src/course/features/materials/presentation/cubit/material_cubit.dart';
+import 'package:educational_app/src/course/features/materials/presentation/app/cubit/material_cubit.dart';
 import 'package:educational_app/src/course/features/materials/presentation/widgets/edit_resource_dialog.dart';
 import 'package:educational_app/src/course/features/materials/presentation/widgets/picked_resource_tile.dart';
 import 'package:educational_app/src/notifications/presentation/widgets/notification_wrapper.dart';
@@ -205,13 +205,15 @@ class _AddMaterialsViewState extends State<AddMaterialsView> {
                         padding: EdgeInsets.zero,
                         itemBuilder: (_, index) {
                           final resource = resources[index];
-                          return PickedResourceTile(resource,
-                              onEdit: () => editResource(index),
-                              onDelete: () {
-                                setState(() {
-                                  resources.removeAt(index);
-                                });
+                          return PickedResourceTile(
+                            resource,
+                            onEdit: () => editResource(index),
+                            onDelete: () {
+                              setState(() {
+                                resources.removeAt(index);
                               });
+                            },
+                          );
                         },
                       ),
                     ),

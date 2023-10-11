@@ -109,6 +109,14 @@ Route<dynamic> generateRoute(RouteSettings settings) {
         ),
         settings: settings,
       );
+    case CourseMaterialView.routeName:
+      return _pageBuilder(
+        (_) => BlocProvider(
+          create: (_) => sl<MaterialCubit>(),
+          child: CourseMaterialView(settings.arguments! as Course),
+        ),
+        settings: settings,
+      );
     default:
       return _pageBuilder(
         (_) => const PageUnderConstruction(),

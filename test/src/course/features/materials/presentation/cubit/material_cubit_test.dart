@@ -4,7 +4,7 @@ import 'package:educational_app/core/errors/failures.dart';
 import 'package:educational_app/src/course/features/materials/data/models/resource_model.dart';
 import 'package:educational_app/src/course/features/materials/domain/usecases/add_material.dart';
 import 'package:educational_app/src/course/features/materials/domain/usecases/get_materials.dart';
-import 'package:educational_app/src/course/features/materials/presentation/cubit/material_cubit.dart';
+import 'package:educational_app/src/course/features/materials/presentation/app/cubit/material_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

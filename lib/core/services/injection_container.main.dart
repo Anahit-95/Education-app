@@ -116,7 +116,11 @@ Future<void> _initMaterial() async {
         firestore: sl(),
         storage: sl(),
       ),
-    );
+    )
+    ..registerFactory(() => ResourceController(
+          storage: sl(),
+          prefs: sl(),
+        ));
 }
 
 Future<void> _initExam() async {
