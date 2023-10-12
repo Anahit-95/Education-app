@@ -75,7 +75,7 @@ class _CourseMaterialViewState extends State<CourseMaterialView> {
                     return ChangeNotifierProvider(
                       create: (_) =>
                           sl<ResourceController>()..init(materials[index]),
-                      child: ResourceTile(),
+                      child: const ResourceTile(),
                     );
                   },
                 ),
