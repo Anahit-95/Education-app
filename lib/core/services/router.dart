@@ -7,10 +7,13 @@ import 'package:educational_app/src/auth/presentation/views/sign_in_screen.dart'
 import 'package:educational_app/src/auth/presentation/views/sign_up_screen.dart';
 import 'package:educational_app/src/course/domain/entities/course.dart';
 import 'package:educational_app/src/course/features/exams/domain/entities/exam.dart';
-import 'package:educational_app/src/course/features/exams/presentation/cubit/exam_cubit.dart';
+import 'package:educational_app/src/course/features/exams/domain/entities/user_exam.dart';
+import 'package:educational_app/src/course/features/exams/presentation/app/cubit/exam_cubit.dart';
+import 'package:educational_app/src/course/features/exams/presentation/app/providers/exam_controller.dart';
 import 'package:educational_app/src/course/features/exams/presentation/views/add_exam_view.dart';
 import 'package:educational_app/src/course/features/exams/presentation/views/course_exams_view.dart';
 import 'package:educational_app/src/course/features/exams/presentation/views/exam_details_view.dart';
+import 'package:educational_app/src/course/features/exams/presentation/views/exam_view.dart';
 import 'package:educational_app/src/course/features/materials/presentation/app/cubit/material_cubit.dart';
 import 'package:educational_app/src/course/features/materials/presentation/views/add_material_view.dart';
 import 'package:educational_app/src/course/features/materials/presentation/views/course_materials_view.dart';
@@ -25,10 +28,12 @@ import 'package:educational_app/src/notifications/presentation/cubit/notificatio
 import 'package:educational_app/src/on_boarding/data/datasources/on_boarding_local_data_source.dart';
 import 'package:educational_app/src/on_boarding/presentation/cubit/on_boarding_cubit.dart';
 import 'package:educational_app/src/on_boarding/presentation/views/on_boarding_screen.dart';
+import 'package:educational_app/src/quick_access/presentation/views/exam_history_details_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart' as fui;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 part 'router.main.dart';

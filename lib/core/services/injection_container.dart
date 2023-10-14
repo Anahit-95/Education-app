@@ -22,7 +22,7 @@ import 'package:educational_app/src/course/features/exams/domain/usecases/get_us
 import 'package:educational_app/src/course/features/exams/domain/usecases/submit_exam.dart';
 import 'package:educational_app/src/course/features/exams/domain/usecases/update_exam.dart';
 import 'package:educational_app/src/course/features/exams/domain/usecases/upload_exam.dart';
-import 'package:educational_app/src/course/features/exams/presentation/cubit/exam_cubit.dart';
+import 'package:educational_app/src/course/features/exams/presentation/app/cubit/exam_cubit.dart';
 import 'package:educational_app/src/course/features/materials/data/datasoursces/material_remote_data_src.dart';
 import 'package:educational_app/src/course/features/materials/data/repos/material_repo_impl.dart';
 import 'package:educational_app/src/course/features/materials/domain/repos/material_repo.dart';
