@@ -38,26 +38,28 @@ void main() {
 
   group('fromMap', () {
     test(
-      'should return a [GroupModel] with the correct data',
+      'should return a valid model when the map is valid',
       () {
         final result = GroupModel.fromMap(tMap);
+
+        expect(result, isA<GroupModel>());
         expect(result, tGroupModel);
       },
     );
   });
 
   group('toMap', () {
-    test('should return a [Map] with the proper data', () {
+    test('should return a JSON map containing the proper data', () {
       final result = tGroupModel.toMap()..remove('lastMessageTimestamp');
 
-      final map = DataMap.from(tMap)..remove('lastMessageTimestamp');
-      expect(result, equals(map));
+      expect(result, tMap..remove('lastMessageTimestamp'));
     });
   });
 
   group('copyWith', () {
-    test('should return a [GroupModel] with the new data', () {
+    test('should return a copy of the model with the given fields', () {
       final result = tGroupModel.copyWith(name: 'New Name');
+      expect(result, isA<GroupModel>());
       expect(result.name, 'New Name');
     });
   });
