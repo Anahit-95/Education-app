@@ -122,6 +122,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         password: password,
       );
 
+      // if(userCred.user != null) {
+      //   await userCred.user?.sendEmailVerification();
+      // }
+
       await userCred.user?.updateDisplayName(fullName);
       await userCred.user?.updatePhotoURL(kDefaultAvatar);
       await _setUserData(_authClient.currentUser!, email);

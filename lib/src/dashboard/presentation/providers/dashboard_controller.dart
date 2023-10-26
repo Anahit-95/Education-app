@@ -1,6 +1,8 @@
 import 'package:educational_app/core/common/app/provider/tab_navigator.dart';
 import 'package:educational_app/core/common/views/persistant_view.dart';
 import 'package:educational_app/core/services/injection_container.dart';
+import 'package:educational_app/src/chat/presentation/cubit/chat_cubit.dart';
+import 'package:educational_app/src/chat/presentation/views/groups_view.dart';
 import 'package:educational_app/src/course/features/videos/presentation/cubit/video_cubit.dart';
 import 'package:educational_app/src/course/presentation/cubit/course_cubit.dart';
 import 'package:educational_app/src/home/presentation/views/home_view.dart';
@@ -45,7 +47,14 @@ class DashboardController extends ChangeNotifier {
       child: const PersistentView(),
     ),
     ChangeNotifierProvider(
-      create: (_) => TabNavigator(TabItem(child: const Placeholder())),
+      create: (_) => TabNavigator(
+        TabItem(
+          child: BlocProvider(
+            create: (context) => sl<ChatCubit>(),
+            child: const GroupView(),
+          ),
+        ),
+      ),
       child: const PersistentView(),
     ),
     ChangeNotifierProvider(
