@@ -9,14 +9,14 @@ import 'package:educational_app/src/chat/presentation/widgets/your_group_tile.da
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class GroupView extends StatefulWidget {
-  const GroupView({super.key});
+class GroupsView extends StatefulWidget {
+  const GroupsView({super.key});
 
   @override
-  State<GroupView> createState() => _GroupViewState();
+  State<GroupsView> createState() => _GroupsViewState();
 }
 
-class _GroupViewState extends State<GroupView> {
+class _GroupsViewState extends State<GroupsView> {
   List<Group> yourGroups = [];
   List<Group> otherGroups = [];
 
@@ -71,8 +71,8 @@ class _GroupViewState extends State<GroupView> {
             return const LoadingView();
           } else if (state is GroupsLoaded && state.groups.isEmpty) {
             return const NotFoundText(
-              'No groups found.\nPlease contact admin or if '
-              'you are admin add courses.',
+              'No groups found\nPlease contact admin or if you are admin, '
+              'add courses',
             );
           } else if ((state is GroupsLoaded) ||
               (yourGroups.isNotEmpty) ||
@@ -97,9 +97,7 @@ class _GroupViewState extends State<GroupView> {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  Divider(
-                    color: Colors.grey.shade300,
-                  ),
+                  Divider(color: Colors.grey.shade300),
                   ...otherGroups.map(OtherGroupTile.new),
                 ],
               ],

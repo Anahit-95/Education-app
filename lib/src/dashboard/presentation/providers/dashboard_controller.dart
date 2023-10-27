@@ -51,7 +51,7 @@ class DashboardController extends ChangeNotifier {
         TabItem(
           child: BlocProvider(
             create: (context) => sl<ChatCubit>(),
-            child: const GroupView(),
+            child: const GroupsView(),
           ),
         ),
       ),

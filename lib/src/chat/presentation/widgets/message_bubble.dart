@@ -40,7 +40,7 @@ class _MessageBubbleState extends State<MessageBubble> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<ChatCubit, ChatState>(
-      listener: (context, state) {
+      listener: (_, state) {
         if (state is UserFound && user == null) {
           setState(() {
             user = state.user;

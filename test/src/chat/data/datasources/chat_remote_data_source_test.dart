@@ -109,7 +109,7 @@ void main() {
 
         // Assert
         // Assert
-        expect(result, emitsInOrder([equals(expectedMessages)]));
+        expect(result, emitsInOrder([equals(expectedMessages.reversed)]));
       },
     );
 

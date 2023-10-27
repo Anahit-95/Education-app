@@ -85,7 +85,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
           .collection('groups')
           .doc(groupId)
           .collection('messages')
-          .orderBy('timestamp')
+          .orderBy('timestamp', descending: true)
           .snapshots()
           .map(
             (snapshot) => snapshot.docs.map((doc) {
@@ -226,7 +226,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
       await _firestore.collection('groups').doc(message.groupId).update({
         'lastMessage': message.message,
         'lastMessageSenderName': _auth.currentUser!.displayName,
-        'timestamp': message.timestamp,
+        'lastMessageTimestamp': message.timestamp,
       });
     } on FirebaseException catch (e) {
       throw ServerException(

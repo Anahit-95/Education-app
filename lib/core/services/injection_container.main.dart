@@ -180,14 +180,16 @@ Future<void> _initNotifications() async {
 
 Future<void> _initChat() async {
   sl
-    ..registerFactory(() => ChatCubit(
-          getGroups: sl(),
-          getMessages: sl(),
-          getUserById: sl(),
-          joinGroup: sl(),
-          leaveGroup: sl(),
-          sendMessage: sl(),
-        ))
+    ..registerFactory(
+      () => ChatCubit(
+        getGroups: sl(),
+        getMessages: sl(),
+        getUserById: sl(),
+        joinGroup: sl(),
+        leaveGroup: sl(),
+        sendMessage: sl(),
+      ),
+    )
     ..registerLazySingleton(() => GetGroups(sl()))
     ..registerLazySingleton(() => GetMessages(sl()))
     ..registerLazySingleton(() => GetUserById(sl()))

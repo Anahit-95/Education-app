@@ -48,24 +48,28 @@ class _ChatInputFieldState extends State<ChatInputField> {
             borderRadius: BorderRadius.circular(50),
             borderSide: BorderSide.none,
           ),
-          suffixIcon: IconButton.filled(
-            padding: EdgeInsets.zero,
-            icon: const Icon(
-              IconlyLight.send,
-              color: Colors.white,
+          suffixIcon: Transform.scale(
+            scale: .75,
+            child: IconButton.filled(
+              padding: EdgeInsets.zero,
+              icon: const Icon(
+                IconlyLight.send,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                final message = controller.text.trim();
+                if (message.isEmpty) return;
+                controller.clear();
+                focusNode.unfocus();
+                context.read<ChatCubit>().sendMessage(
+                      MessageModel.empty().copyWith(
+                        message: message,
+                        senderId: context.currentUser!.uid,
+                        groupId: widget.groupId,
+                      ),
+                    );
+              },
             ),
-            onPressed: () {
-              final message = controller.text.trim();
-              if (message.isEmpty) return;
-              controller.clear();
-              context.read<ChatCubit>().sendMessage(
-                    MessageModel.empty().copyWith(
-                      message: message,
-                      senderId: context.currentUser!.uid,
-                      groupId: widget.groupId,
-                    ),
-                  );
-            },
           ),
         ),
       ),
