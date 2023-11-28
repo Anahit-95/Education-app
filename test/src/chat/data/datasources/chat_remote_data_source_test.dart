@@ -259,4 +259,29 @@ void main() {
       expect(() => call(userId), throwsA(isA<ServerException>()));
     });
   });
+
+  // group('getGroupMembers', () {
+  //   test('slould return List of Users when call is successfull1', () async {
+  //     const userId = 'uid';
+  //     final expectedUser = const LocalUserModel.empty().copyWith(uid: userId);
+  //     await firestore.collection('users').doc(userId).set(expectedUser.toMap());
+
+  //     final group = GroupModel.empty();
+  //     await firestore.collection('groups').doc(group.id).set(group.toMap());
+  //     final groupDocRef = await firestore.collection('groups').add({
+  //       'members': <String>[],
+  //     });
+  //     final userDocRef = await firestore.collection('users').add({
+  //       'groupIds': <String>[],
+  //     });
+  //     await firestore.collection('groups').doc(groupDocRef.id).update({
+  //       'members': FieldValue.arrayUnion([userId])
+  //     });
+
+  //     final expectedUsers = [expectedUser];
+
+  //     final result = await remoteDataSrc.getGroupMembers(groupDocRef.id);
+  //     expect(result, expectedUsers);
+  //   });
+  // });
 }

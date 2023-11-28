@@ -37,7 +37,9 @@ class _ChatInputFieldState extends State<ChatInputField> {
         maxLines: 5,
         decoration: InputDecoration(
           hintText: 'Message',
-          hintStyle: const TextStyle(color: Color(0xFF9FA5BB)),
+          hintStyle: const TextStyle(
+            color: Color(0xFF9FA5BB),
+          ),
           filled: true,
           fillColor: Colours.chatFieldColour,
           contentPadding: const EdgeInsets.symmetric(
@@ -52,10 +54,7 @@ class _ChatInputFieldState extends State<ChatInputField> {
             scale: .75,
             child: IconButton.filled(
               padding: EdgeInsets.zero,
-              icon: const Icon(
-                IconlyLight.send,
-                color: Colors.white,
-              ),
+              icon: const Icon(IconlyLight.send, color: Colors.white),
               onPressed: () {
                 final message = controller.text.trim();
                 if (message.isEmpty) return;

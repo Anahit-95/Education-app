@@ -4,6 +4,7 @@ import 'package:educational_app/core/errors/failures.dart';
 import 'package:educational_app/src/auth/domain/entities/user.dart';
 import 'package:educational_app/src/chat/data/models/group_model.dart';
 import 'package:educational_app/src/chat/data/models/message_model.dart';
+import 'package:educational_app/src/chat/domain/usecases/get_group_members.dart';
 import 'package:educational_app/src/chat/domain/usecases/get_groups.dart';
 import 'package:educational_app/src/chat/domain/usecases/get_messages.dart';
 import 'package:educational_app/src/chat/domain/usecases/get_user_by_id.dart';
@@ -26,6 +27,8 @@ class MockLeaveGroup extends Mock implements LeaveGroup {}
 
 class MockGetUserById extends Mock implements GetUserById {}
 
+class MockGetGroupMembers extends Mock implements GetGroupMembers {}
+
 void main() {
   late SendMessage sendMessage;
   late GetMessages getMessages;
@@ -33,6 +36,7 @@ void main() {
   late JoinGroup joinGroup;
   late LeaveGroup leaveGroup;
   late GetUserById getUserById;
+  late GetGroupMembers getGroupMembers;
   late ChatCubit chatCubit;
 
   setUp(() {
@@ -42,6 +46,7 @@ void main() {
     joinGroup = MockJoinGroup();
     leaveGroup = MockLeaveGroup();
     getUserById = MockGetUserById();
+    getGroupMembers = MockGetGroupMembers();
     chatCubit = ChatCubit(
       getGroups: getGroups,
       getMessages: getMessages,
@@ -49,6 +54,7 @@ void main() {
       joinGroup: joinGroup,
       leaveGroup: leaveGroup,
       sendMessage: sendMessage,
+      getGroupMembers: getGroupMembers,
     );
   });
 
@@ -246,6 +252,49 @@ void main() {
       verify: (_) {
         verify(() => getUserById(tUserId)).called(1);
         verifyNoMoreInteractions(getUserById);
+      },
+    );
+  });
+
+  group('getGroupMembers', () {
+    const tGroupId = 'groupIdId';
+    const tMembers = [LocalUser.empty()];
+
+    blocTest<ChatCubit, ChatState>(
+      'emits [GettingGroupMembers, UserFound] when successful',
+      build: () {
+        when(() => getGroupMembers(any())).thenAnswer(
+          (_) async => const Right(tMembers),
+        );
+        return chatCubit;
+      },
+      act: (cubit) => cubit.getGroupMembers(tGroupId),
+      expect: () => const [
+        GettingGroupMembers(),
+        GroupMembersFound(tMembers),
+      ],
+      verify: (_) {
+        verify(() => getGroupMembers(tGroupId)).called(1);
+        verifyNoMoreInteractions(getGroupMembers);
+      },
+    );
+
+    blocTest<ChatCubit, ChatState>(
+      'emits [GettingUser, ChatError] when unsuccessful',
+      build: () {
+        when(() => getGroupMembers(any())).thenAnswer(
+          (_) async => Left(tFailure),
+        );
+        return chatCubit;
+      },
+      act: (cubit) => cubit.getGroupMembers(tGroupId),
+      expect: () => [
+        const GettingGroupMembers(),
+        ChatError(tFailure.errorMessage),
+      ],
+      verify: (_) {
+        verify(() => getGroupMembers(tGroupId)).called(1);
+        verifyNoMoreInteractions(getGroupMembers);
       },
     );
   });

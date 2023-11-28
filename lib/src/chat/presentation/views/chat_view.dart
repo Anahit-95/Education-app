@@ -2,6 +2,7 @@ import 'package:educational_app/core/common/views/loading_view.dart';
 import 'package:educational_app/core/extensions/context_extension.dart';
 import 'package:educational_app/core/services/injection_container.dart';
 import 'package:educational_app/core/utils/core_utils.dart';
+import 'package:educational_app/src/auth/domain/entities/user.dart';
 import 'package:educational_app/src/chat/domain/entities/group.dart';
 import 'package:educational_app/src/chat/domain/entities/message.dart';
 import 'package:educational_app/src/chat/presentation/cubit/chat_cubit.dart';
@@ -24,12 +25,21 @@ class _ChatViewState extends State<ChatView> {
   bool showingDialog = false;
 
   List<Message> messages = [];
+  List<LocalUser> members = [];
   bool showInputField = false;
+
+  // final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
+    context.read<ChatCubit>().getGroupMembers(widget.group.id);
     context.read<ChatCubit>().getMessages(widget.group.id);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -50,6 +60,10 @@ class _ChatViewState extends State<ChatView> {
             CoreUtils.showLoadingDialog(context);
           } else if (state is LeftGroup) {
             context.pop();
+          } else if (state is GroupMembersFound) {
+            setState(() {
+              members = state.members;
+            });
           } else if (state is MessagesLoaded) {
             setState(() {
               messages = state.messages;
@@ -58,9 +72,12 @@ class _ChatViewState extends State<ChatView> {
           }
         },
         builder: (context, state) {
-          if (state is LoadingMessages) {
+          if (state is LoadingMessages ||
+              state is GettingGroupMembers ||
+              members.isEmpty) {
             return const LoadingView();
           } else if (state is MessagesLoaded ||
+              members.isNotEmpty ||
               showInputField ||
               messages.isNotEmpty) {
             return Column(
@@ -69,18 +86,27 @@ class _ChatViewState extends State<ChatView> {
                   child: ListView.builder(
                     itemCount: messages.length,
                     reverse: true,
+                    shrinkWrap: true,
                     itemBuilder: (_, index) {
                       final message = messages[index];
-                      final previousMessage =
-                          index > 0 ? messages[index - 1] : null;
+                      final previousMessage = index < messages.length - 1
+                          ? messages[index + 1]
+                          : null;
+                      final isCurrentUser =
+                          message.senderId == context.currentUser!.uid;
 
                       final showSenderInfo = previousMessage == null ||
                           previousMessage.senderId != message.senderId;
+                      final user = members
+                          .firstWhere((user) => user.uid == message.senderId);
+
                       return BlocProvider(
                         create: (_) => sl<ChatCubit>(),
                         child: MessageBubble(
                           message,
+                          user: user,
                           showSenderInfo: showSenderInfo,
+                          isCurrentUser: isCurrentUser,
                         ),
                       );
                     },

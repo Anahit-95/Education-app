@@ -16,10 +16,7 @@ class LeaveGroup extends FutureUsecaseWithParams<void, LeaveGroupParams> {
 }
 
 class LeaveGroupParams extends Equatable {
-  const LeaveGroupParams({
-    required this.groupId,
-    required this.userId,
-  });
+  const LeaveGroupParams({required this.groupId, required this.userId});
 
   const LeaveGroupParams.empty()
       : groupId = '',
@@ -29,5 +26,5 @@ class LeaveGroupParams extends Equatable {
   final String userId;
 
   @override
-  List<Object?> get props => [groupId, userId];
+  List<String> get props => [groupId, userId];
 }

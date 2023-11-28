@@ -16,10 +16,7 @@ class JoinGroup extends FutureUsecaseWithParams<void, JoinGroupParams> {
 }
 
 class JoinGroupParams extends Equatable {
-  const JoinGroupParams({
-    required this.groupId,
-    required this.userId,
-  });
+  const JoinGroupParams({required this.groupId, required this.userId});
 
   const JoinGroupParams.empty()
       : groupId = '',
@@ -29,5 +26,5 @@ class JoinGroupParams extends Equatable {
   final String userId;
 
   @override
-  List<Object?> get props => [groupId, userId];
+  List<String> get props => [groupId, userId];
 }

@@ -115,8 +115,10 @@ class ChatRepoImpl implements ChatRepo {
   }
 
   @override
-  ResultFuture<void> leaveGroup(
-      {required String groupId, required String userId}) async {
+  ResultFuture<void> leaveGroup({
+    required String groupId,
+    required String userId,
+  }) async {
     try {
       await _remoteDataSource.leaveGroup(
         groupId: groupId,
@@ -132,6 +134,16 @@ class ChatRepoImpl implements ChatRepo {
   ResultFuture<LocalUser> getUserById(String userId) async {
     try {
       final result = await _remoteDataSource.getUserById(userId);
+      return Right(result);
+    } on ServerException catch (e) {
+      return Left(ServerFailure.fromException(e));
+    }
+  }
+
+  @override
+  ResultFuture<List<LocalUser>> getGroupMembers(String groupId) async {
+    try {
+      final result = await _remoteDataSource.getGroupMembers(groupId);
       return Right(result);
     } on ServerException catch (e) {
       return Left(ServerFailure.fromException(e));

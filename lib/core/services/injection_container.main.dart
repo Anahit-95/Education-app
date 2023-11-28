@@ -188,6 +188,7 @@ Future<void> _initChat() async {
         joinGroup: sl(),
         leaveGroup: sl(),
         sendMessage: sl(),
+        getGroupMembers: sl(),
       ),
     )
     ..registerLazySingleton(() => GetGroups(sl()))
@@ -196,6 +197,7 @@ Future<void> _initChat() async {
     ..registerLazySingleton(() => JoinGroup(sl()))
     ..registerLazySingleton(() => LeaveGroup(sl()))
     ..registerLazySingleton(() => SendMessage(sl()))
+    ..registerLazySingleton(() => GetGroupMembers(sl()))
     ..registerLazySingleton<ChatRepo>(() => ChatRepoImpl(sl()))
     ..registerLazySingleton<ChatRemoteDataSource>(
       () => ChatRemoteDataSourceImpl(

@@ -35,6 +35,10 @@ class GettingUser extends ChatState {
   const GettingUser();
 }
 
+class GettingGroupMembers extends ChatState {
+  const GettingGroupMembers();
+}
+
 class MessageSent extends ChatState {
   const MessageSent();
 }
@@ -72,6 +76,15 @@ class LeftGroup extends ChatState {
 
 class JoinedGroup extends ChatState {
   const JoinedGroup();
+}
+
+class GroupMembersFound extends ChatState {
+  const GroupMembersFound(this.members);
+
+  final List<LocalUser> members;
+
+  @override
+  List<Object> get props => [members];
 }
 
 class ChatError extends ChatState {

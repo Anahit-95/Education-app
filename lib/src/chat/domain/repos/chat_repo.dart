@@ -23,4 +23,6 @@ abstract class ChatRepo {
   });
 
   ResultFuture<LocalUser> getUserById(String userId);
+
+  ResultFuture<List<LocalUser>> getGroupMembers(String groupId);
 }

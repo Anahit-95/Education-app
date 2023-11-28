@@ -64,8 +64,8 @@ void main() {
     });
 
     test(
-        'should return a stream of Left<Failure> when remote data source throws '
-        'an error', () {
+        'should return a stream of Left<Failure> when remote data source '
+        'throws an error', () {
       when(
         () => remoteDataSource.getMessages(any()),
       ).thenAnswer(
@@ -374,6 +374,55 @@ void main() {
         );
 
         verify(() => remoteDataSource.getUserById(tUserId)).called(1);
+
+        verifyNoMoreInteractions(remoteDataSource);
+      },
+    );
+  });
+
+  group('getGroupMemebers', () {
+    final expectedUsers = [tLocalUser];
+    test(
+      'should return List<LocalUser> when call to remote source '
+      'is successful',
+      () async {
+        when(() => remoteDataSource.getGroupMembers(any()))
+            .thenAnswer((_) async => expectedUsers);
+
+        final result = await repoImpl.getGroupMembers('groupId');
+        expect(
+          result,
+          equals(Right<Failure, List<LocalUser>>(expectedUsers)),
+        );
+
+        verify(() => remoteDataSource.getGroupMembers('groupId')).called(1);
+
+        verifyNoMoreInteractions(remoteDataSource);
+      },
+    );
+
+    test(
+      'should return [ServerFailure] when call to remote source is '
+      'unsuccessful',
+      () async {
+        when(
+          () => remoteDataSource.getGroupMembers(any()),
+        ).thenThrow(
+          const ServerException(message: 'message', statusCode: 'statusCode'),
+        );
+
+        final result = await repoImpl.getGroupMembers('groupId');
+
+        expect(
+          result,
+          equals(
+            Left<ServerFailure, dynamic>(
+              ServerFailure(message: 'message', statusCode: 'statusCode'),
+            ),
+          ),
+        );
+
+        verify(() => remoteDataSource.getGroupMembers('groupId')).called(1);
 
         verifyNoMoreInteractions(remoteDataSource);
       },

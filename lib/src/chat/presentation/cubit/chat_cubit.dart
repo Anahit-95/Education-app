@@ -6,6 +6,7 @@ import 'package:educational_app/core/errors/failures.dart';
 import 'package:educational_app/src/auth/domain/entities/user.dart';
 import 'package:educational_app/src/chat/domain/entities/group.dart';
 import 'package:educational_app/src/chat/domain/entities/message.dart';
+import 'package:educational_app/src/chat/domain/usecases/get_group_members.dart';
 import 'package:educational_app/src/chat/domain/usecases/get_groups.dart';
 import 'package:educational_app/src/chat/domain/usecases/get_messages.dart';
 import 'package:educational_app/src/chat/domain/usecases/get_user_by_id.dart';
@@ -17,19 +18,21 @@ import 'package:equatable/equatable.dart';
 part 'chat_state.dart';
 
 class ChatCubit extends Cubit<ChatState> {
-  ChatCubit(
-      {required GetGroups getGroups,
-      required GetMessages getMessages,
-      required GetUserById getUserById,
-      required JoinGroup joinGroup,
-      required LeaveGroup leaveGroup,
-      required SendMessage sendMessage})
-      : _getGroups = getGroups,
+  ChatCubit({
+    required GetGroups getGroups,
+    required GetMessages getMessages,
+    required GetUserById getUserById,
+    required JoinGroup joinGroup,
+    required LeaveGroup leaveGroup,
+    required SendMessage sendMessage,
+    required GetGroupMembers getGroupMembers,
+  })  : _getGroups = getGroups,
         _getMessages = getMessages,
         _getUserById = getUserById,
         _joinGroup = joinGroup,
         _leaveGroup = leaveGroup,
         _sendMessage = sendMessage,
+        _getGroupMembers = getGroupMembers,
         super(const ChatInitial());
 
   final GetGroups _getGroups;
@@ -38,6 +41,7 @@ class ChatCubit extends Cubit<ChatState> {
   final JoinGroup _joinGroup;
   final LeaveGroup _leaveGroup;
   final SendMessage _sendMessage;
+  final GetGroupMembers _getGroupMembers;
 
   Future<void> sendMessage(Message message) async {
     emit(const SendingMessage());
@@ -84,6 +88,16 @@ class ChatCubit extends Cubit<ChatState> {
     result.fold(
       (failure) => emit(ChatError(failure.errorMessage)),
       (user) => emit(UserFound(user)),
+    );
+  }
+
+  Future<void> getGroupMembers(String groupId) async {
+    emit(const GettingGroupMembers());
+    final result = await _getGroupMembers(groupId);
+
+    result.fold(
+      (failure) => emit(ChatError(failure.errorMessage)),
+      (members) => emit(GroupMembersFound(members)),
     );
   }
 

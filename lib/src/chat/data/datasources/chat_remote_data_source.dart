@@ -12,8 +12,10 @@ abstract class ChatRemoteDataSource {
 
   Future<void> sendMessage(Message message);
 
+  // Should go to 'groups >> groupDoc >> messages >> orderBy('timestamp')
   Stream<List<MessageModel>> getMessages(String groupId);
 
+  // Should go to 'groups'
   Stream<List<GroupModel>> getGroups();
 
   Future<void> joinGroup({required String groupId, required String userId});
@@ -21,6 +23,8 @@ abstract class ChatRemoteDataSource {
   Future<void> leaveGroup({required String groupId, required String userId});
 
   Future<LocalUserModel> getUserById(String userId);
+
+  Future<List<LocalUserModel>> getGroupMembers(String groupId);
 }
 
 class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
@@ -37,23 +41,20 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   Stream<List<GroupModel>> getGroups() {
     try {
       DataSourceUtils.authorizeUser(_auth);
-      final groupStream = _firestore.collection('groups').snapshots().map(
-            (snapshot) => snapshot.docs.map((doc) {
-              return GroupModel.fromMap(doc.data());
-            }).toList(),
-          );
-      return groupStream.handleError((
-        dynamic error,
-        dynamic stackTrace,
-      ) {
+      final groupsStream =
+          _firestore.collection('groups').snapshots().map((snapshot) {
+        return snapshot.docs
+            .map((doc) => GroupModel.fromMap(doc.data()))
+            .toList();
+      });
+
+      return groupsStream.handleError((dynamic error) {
         if (error is FirebaseException) {
           throw ServerException(
             message: error.message ?? 'Unknown error occurred',
             statusCode: error.code,
           );
         } else {
-          // debugPrint(error.toString());
-          // debugPrint(stackTrace.toString());
           throw ServerException(
             message: error.toString(),
             statusCode: '500',
@@ -87,26 +88,22 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
           .collection('messages')
           .orderBy('timestamp', descending: true)
           .snapshots()
-          .map(
-            (snapshot) => snapshot.docs.map((doc) {
-              return MessageModel.fromMap(doc.data());
-            }).toList(),
-          );
-      return messagesStream.handleError((
-        dynamic error,
-        dynamic stackTrace,
-      ) {
+          .map((snapshot) {
+        return snapshot.docs
+            .map((doc) => MessageModel.fromMap(doc.data()))
+            .toList();
+      });
+
+      return messagesStream.handleError((dynamic error) {
         if (error is FirebaseException) {
           throw ServerException(
             message: error.message ?? 'Unknown error occurred',
             statusCode: error.code,
           );
         } else {
-          // debugPrint(error.toString());
-          // debugPrint(stackTrace.toString());
           throw ServerException(
             message: error.toString(),
-            statusCode: '505',
+            statusCode: '500',
           );
         }
       });
@@ -141,7 +138,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
       return LocalUserModel.fromMap(userDoc.data()!);
     } on FirebaseException catch (e) {
       throw ServerException(
-        message: e.message ?? 'Unknown error occured',
+        message: e.message ?? 'Unknown error occurred',
         statusCode: e.code,
       );
     } on ServerException {
@@ -169,7 +166,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
       });
     } on FirebaseException catch (e) {
       throw ServerException(
-        message: e.message ?? 'Unknown error occured',
+        message: e.message ?? 'Unknown error occurred',
         statusCode: e.code,
       );
     } on ServerException {
@@ -197,7 +194,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
       });
     } on FirebaseException catch (e) {
       throw ServerException(
-        message: e.message ?? 'Unknown error occured',
+        message: e.message ?? 'Unknown error occurred',
         statusCode: e.code,
       );
     } on ServerException {
@@ -219,10 +216,10 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
           .doc(message.groupId)
           .collection('messages')
           .doc();
-      final messageModel = (message as MessageModel).copyWith(
-        id: messageRef.id,
-      );
-      await messageRef.set(messageModel.toMap());
+      final messageToUpload =
+          (message as MessageModel).copyWith(id: messageRef.id);
+      await messageRef.set(messageToUpload.toMap());
+
       await _firestore.collection('groups').doc(message.groupId).update({
         'lastMessage': message.message,
         'lastMessageSenderName': _auth.currentUser!.displayName,
@@ -230,16 +227,39 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
       });
     } on FirebaseException catch (e) {
       throw ServerException(
-        message: e.message ?? 'Unknown error occured',
+        message: e.message ?? 'Unknown error occurred',
         statusCode: e.code,
       );
     } on ServerException {
       rethrow;
     } catch (e) {
+      throw ServerException(message: e.toString(), statusCode: '505');
+    }
+  }
+
+  @override
+  Future<List<LocalUserModel>> getGroupMembers(String groupId) async {
+    try {
+      await DataSourceUtils.authorizeUser(_auth);
+      final groupDoc = await _firestore.collection('groups').doc(groupId).get();
+      final groupModel = GroupModel.fromMap(groupDoc.data()!);
+      final membersId = groupModel.members;
+      final members = <LocalUserModel>[];
+      for (final userId in membersId) {
+        final userDoc = await _firestore.collection('users').doc(userId).get();
+        final userModel = LocalUserModel.fromMap(userDoc.data()!);
+        members.add(userModel);
+      }
+      return members;
+    } on FirebaseException catch (e) {
       throw ServerException(
-        message: e.toString(),
-        statusCode: '505',
+        message: e.message ?? 'Unknown error occurred',
+        statusCode: e.code,
       );
+    } on ServerException {
+      rethrow;
+    } catch (e) {
+      throw ServerException(message: e.toString(), statusCode: '505');
     }
   }
 }
