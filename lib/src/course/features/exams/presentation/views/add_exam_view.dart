@@ -17,7 +17,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class AddExamView extends StatefulWidget {
   const AddExamView({super.key});
 
-  static const routeName = '/add-exams';
+  static const routeName = '/add-exam';
 
   @override
   State<AddExamView> createState() => _AddExamViewState();
@@ -32,10 +32,10 @@ class _AddExamViewState extends State<AddExamView> {
 
   Future<void> pickExamFile() async {
     final result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['json'],
-    );
-    if (result != null) {
+        // type: FileType.custom,
+        // allowedExtensions: ['json'],
+        );
+    if (result != null && result.files.single.name.contains('json')) {
       setState(() {
         examFile = File(result.files.single.path!);
       });
@@ -90,7 +90,7 @@ class _AddExamViewState extends State<AddExamView> {
             CoreUtils.sendNotification(
               context,
               title: 'New ${courseNotifier.value!.title} exam',
-              body: 'A new video has been added for '
+              body: 'A new exam has been added for '
                   '${courseNotifier.value!.title}',
               category: NotificationCategory.TEST,
             );
